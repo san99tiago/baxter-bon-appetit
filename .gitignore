@@ -50,3 +50,6 @@ coverage.xml
 venv/
 venv.bak/
 ENV/
+
+# -------- VSCODE IGNORES ------
+.vscode
