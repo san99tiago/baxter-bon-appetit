@@ -45,9 +45,10 @@ coverage.xml
 # pyenv
 .python-version
 
+# ------ ENVIRONMENT IGNORES -----
 # Environments
 .venv
-venv/
+venv*
 venv.bak/
 ENV/
 
