@@ -6,12 +6,15 @@
 import cv2 as cv
 import os
 
-CURRENT_FOLDER = os.path.abspath(os.path.dirname(__file__))
-print(CURRENT_FOLDER)
+ROOT_FOLDER = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.pardir))
+print("ROOT_FOLDER --> ", ROOT_FOLDER)
+
 
 def main(image):
     # Create the haar cascade
-    casc_path = os.path.join(CURRENT_FOLDER, "haarcascade_frontalface_default.xml")  # From OpenCV Github
+    casc_path = os.path.join(
+        ROOT_FOLDER, "src", "haarcascade_frontalface_default.xml")
     faceCascade = cv.CascadeClassifier(casc_path)
 
     if image is None:
@@ -41,31 +44,50 @@ def main(image):
 
 if __name__ == "__main__":
     # TEST 1
-    image_relative_path = os.path.join(CURRENT_FOLDER, "test_imgs", "picture0.jpg")
+    image_relative_path = os.path.join(
+        ROOT_FOLDER, "assets", "imgs", "picture0.jpg")
     image = cv.imread(image_relative_path)
     main(image)
     cv.waitKey(0)
 
     # TEST 2
-    image_relative_path = os.path.join(CURRENT_FOLDER, "test_imgs", "picture1.png")
+    image_relative_path = os.path.join(
+        ROOT_FOLDER, "assets", "imgs", "picture1.jpg")
     image = cv.imread(image_relative_path)
     main(image)
     cv.waitKey(0)
 
     # TEST 3
-    image_relative_path = os.path.join(CURRENT_FOLDER, "test_imgs", "picture2.png")
+    image_relative_path = os.path.join(
+        ROOT_FOLDER, "assets", "imgs", "picture2.jpg")
     image = cv.imread(image_relative_path)
     main(image)
     cv.waitKey(0)
 
     # TEST 4
-    image_relative_path = os.path.join(CURRENT_FOLDER, "test_imgs", "picture3.png")
+    image_relative_path = os.path.join(
+        ROOT_FOLDER, "assets", "imgs", "picture3.jpg")
     image = cv.imread(image_relative_path)
     main(image)
     cv.waitKey(0)
 
     # TEST 5
-    image_relative_path = os.path.join(CURRENT_FOLDER, "test_imgs", "picture4.png")
+    image_relative_path = os.path.join(
+        ROOT_FOLDER, "assets", "imgs", "picture4.jpg")
+    image = cv.imread(image_relative_path)
+    main(image)
+    cv.waitKey(0)
+
+    # TEST 6
+    image_relative_path = os.path.join(
+        ROOT_FOLDER, "assets", "imgs", "picture5.jpg")
+    image = cv.imread(image_relative_path)
+    main(image)
+    cv.waitKey(0)
+
+    # TEST 7
+    image_relative_path = os.path.join(
+        ROOT_FOLDER, "assets", "imgs", "picture6.jpg")
     image = cv.imread(image_relative_path)
     main(image)
     cv.waitKey(0)
