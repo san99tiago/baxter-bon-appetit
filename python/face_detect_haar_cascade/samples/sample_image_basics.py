@@ -18,49 +18,56 @@ def main():
     image_relative_path = os.path.join(
         ROOT_FOLDER, "assets", "imgs", "faces_0.jpg")
     image = cv.imread(image_relative_path)
-    fdhc.face_detect(image)
+    fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
+    fd.face_detect()
     cv.waitKey(0)
 
     # Sample 2
     image_relative_path = os.path.join(
         ROOT_FOLDER, "assets", "imgs", "faces_1.jpg")
     image = cv.imread(image_relative_path)
-    fdhc.face_detect(image)
+    fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
+    fd.face_detect()
     cv.waitKey(0)
 
     # Sample 3
     image_relative_path = os.path.join(
         ROOT_FOLDER, "assets", "imgs", "faces_2.jpg")
     image = cv.imread(image_relative_path)
-    fdhc.face_detect(image)
+    fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
+    fd.face_detect()
     cv.waitKey(0)
 
     # Sample 4
     image_relative_path = os.path.join(
         ROOT_FOLDER, "assets", "imgs", "faces_3.jpg")
     image = cv.imread(image_relative_path)
-    fdhc.face_detect(image)
+    fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
+    fd.face_detect()
     cv.waitKey(0)
 
     # Sample 5
     image_relative_path = os.path.join(
         ROOT_FOLDER, "assets", "imgs", "faces_4.jpg")
     image = cv.imread(image_relative_path)
-    fdhc.face_detect(image)
+    fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
+    fd.face_detect()
     cv.waitKey(0)
 
     # Sample 6
     image_relative_path = os.path.join(
         ROOT_FOLDER, "assets", "imgs", "faces_5.jpg")
     image = cv.imread(image_relative_path)
-    fdhc.face_detect(image)
+    fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
+    fd.face_detect()
     cv.waitKey(0)
 
     # Sample 7
     image_relative_path = os.path.join(
         ROOT_FOLDER, "assets", "imgs", "nofaces_0.jpg")
     image = cv.imread(image_relative_path)
-    fdhc.face_detect(image)
+    fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
+    fd.face_detect()
     cv.waitKey(0)
 
 

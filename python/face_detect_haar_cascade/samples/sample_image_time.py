@@ -19,7 +19,8 @@ def process_one_image_face():
     image_relative_path = os.path.join(
         ROOT_FOLDER, "assets", "imgs", "faces_0.jpg")
     image = cv.imread(image_relative_path)
-    fdhc.face_detect(image)
+    fd = fdhc.FaceDetector(image, show_results=False, only_biggest_face=False)
+    fd.face_detect()
     cv.destroyAllWindows()
 
 if __name__ == "__main__":
