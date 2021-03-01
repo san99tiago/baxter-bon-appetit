@@ -3,6 +3,8 @@
 # Built-int imports
 import os
 import math
+import time
+
 
 # My own imports
 import face_detect_hc as fdhc
@@ -10,7 +12,7 @@ import face_detect_hc as fdhc
 # General module imports
 import cv2 as cv
 import numpy as np
-import time
+import matplotlib.pyplot as plt
 import psutil
 
 
@@ -49,6 +51,7 @@ class TotalResourcesAnalyzer:
         cv.destroyAllWindows()
 
     def plot_resources(self):
+        # Show general results
         print(" ------ RESULTS -----")
         print("--> CPU PERCENTAGE:")
         print(len(self.cpu))
@@ -58,6 +61,27 @@ class TotalResourcesAnalyzer:
         print(len(self.memory))
         print(self.memory)
         print(np.mean(self.memory))
+
+        # Generate plots for resources
+        t_1 = np.linspace(0, 1, len(self.cpu))
+        figure_1 = plt.figure(1)
+        axes_1 = figure_1.add_axes([0.1, 0.1, 0.8, 0.8])
+        axes_1.plot(t_1, self.cpu, c='b', linewidth=3)
+        axes_1.set_title("CPU PERCENTAGE USED")
+        axes_1.set_xlabel("Time")
+        axes_1.set_ylabel("CPU percentage")
+        axes_1.set_ylim([0, 100])
+        figure_1.patch.set_facecolor((0.2, 1, 1))
+
+        figure_2 = plt.figure(2)
+        axes_2 = figure_2.add_axes([0.1, 0.1, 0.8, 0.8])
+        axes_2.plot(t_1, self.memory, c='r', linewidth=3)
+        axes_2.set_title("MEMORY PERCENTAGE USED")
+        axes_2.set_xlabel("Time")
+        axes_2.set_ylabel("MEMORY percentage")
+        axes_2.set_ylim([0, 100])
+        figure_2.patch.set_facecolor((0.2, 1, 1))
+        plt.show()
 
 if __name__ == "__main__":
     ROOT_FOLDER = os.path.abspath(os.path.join(
