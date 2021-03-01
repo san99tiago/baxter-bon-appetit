@@ -32,6 +32,7 @@ class FaceDetector:
         if (type(self.faces) is tuple):
             if (self.show_results == True):
                 print("Found 0 faces in given image!")
+                cv.imshow("FACES DETECTED", self.image)
             return self.faces
 
         # Apply extra filter if only biggest face is desired
