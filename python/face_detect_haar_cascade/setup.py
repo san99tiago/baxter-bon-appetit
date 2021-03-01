@@ -9,7 +9,7 @@ setup(
     # Library name (same as "pip install ____")
     name='fdhc',
 
-    author='Santiago Garcia y Elkin Guerra',
+    author='Santiago Garcia and Elkin Guerra',
 
     # Package version (MAJOR_VERSION.MINOR_VERSION.MAINTENANCE_VERSION)
     version='0.0.1',

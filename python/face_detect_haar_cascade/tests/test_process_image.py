@@ -23,8 +23,9 @@ class TestProcessImage:
         im_path = os.path.abspath(os.path.join(
             ROOT_FOLDER, "assets", "imgs", "nofaces_0.jpg"))
         real_image = cv.imread(im_path)
-        faces = fdhc.face_detect(real_image)
-        assert len(faces) == 0
+        fd = fdhc.FaceDetector(real_image, show_results=False, only_biggest_face=True)
+        faces = fd.face_detect()
+        assert (type(faces) is tuple)
 
     def test_process_image_with_one_face(self):
         """
@@ -33,7 +34,11 @@ class TestProcessImage:
         im_path = os.path.abspath(os.path.join(
             ROOT_FOLDER, "assets", "imgs", "faces_0.jpg"))
         real_image = cv.imread(im_path)
-        faces = fdhc.face_detect(real_image)
+        fd = fdhc.FaceDetector(real_image, show_results=False, only_biggest_face=True)
+        faces = fd.face_detect()
+        if (type(faces) is tuple):
+            AssertionError
+
         assert len(faces) == 1
 
     def test_process_image_with_two_faces(self):
@@ -43,7 +48,11 @@ class TestProcessImage:
         im_path = os.path.abspath(os.path.join(
             ROOT_FOLDER, "assets", "imgs", "faces_1.jpg"))
         real_image = cv.imread(im_path)
-        faces = fdhc.face_detect(real_image)
+        fd = fdhc.FaceDetector(real_image, show_results=False, only_biggest_face=False)
+        faces = fd.face_detect()
+        if (type(faces) is tuple):
+            AssertionError
+
         assert len(faces) == 2
 
 
