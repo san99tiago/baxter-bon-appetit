@@ -9,14 +9,16 @@ import numpy as np
 
 # My own imports
 import face_detect_hc as fdhc
+import get_assets_folder as gaf
 
-ROOT_FOLDER = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir))
+# Get assets folder in repo for the samples
+ASSETS_FOLDER = gaf.get_assets_folder_path()
+
 
 def main():
     # Sample 1
     image_relative_path = os.path.join(
-        ROOT_FOLDER, "assets", "imgs", "faces_0.jpg")
+        ASSETS_FOLDER, "imgs", "faces_0.jpg")
     image = cv.imread(image_relative_path)
     fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
     fd.face_detect()
@@ -24,7 +26,7 @@ def main():
 
     # Sample 2
     image_relative_path = os.path.join(
-        ROOT_FOLDER, "assets", "imgs", "faces_1.jpg")
+        ASSETS_FOLDER, "imgs", "faces_1.jpg")
     image = cv.imread(image_relative_path)
     fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
     fd.face_detect()
@@ -32,7 +34,7 @@ def main():
 
     # Sample 3
     image_relative_path = os.path.join(
-        ROOT_FOLDER, "assets", "imgs", "faces_2.jpg")
+        ASSETS_FOLDER, "imgs", "faces_2.jpg")
     image = cv.imread(image_relative_path)
     fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
     fd.face_detect()
@@ -40,7 +42,7 @@ def main():
 
     # Sample 4
     image_relative_path = os.path.join(
-        ROOT_FOLDER, "assets", "imgs", "faces_3.jpg")
+        ASSETS_FOLDER, "imgs", "faces_3.jpg")
     image = cv.imread(image_relative_path)
     fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
     fd.face_detect()
@@ -48,7 +50,7 @@ def main():
 
     # Sample 5
     image_relative_path = os.path.join(
-        ROOT_FOLDER, "assets", "imgs", "faces_4.jpg")
+        ASSETS_FOLDER, "imgs", "faces_4.jpg")
     image = cv.imread(image_relative_path)
     fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
     fd.face_detect()
@@ -56,7 +58,7 @@ def main():
 
     # Sample 6
     image_relative_path = os.path.join(
-        ROOT_FOLDER, "assets", "imgs", "faces_5.jpg")
+        ASSETS_FOLDER, "imgs", "faces_5.jpg")
     image = cv.imread(image_relative_path)
     fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
     fd.face_detect()
@@ -64,7 +66,7 @@ def main():
 
     # Sample 7
     image_relative_path = os.path.join(
-        ROOT_FOLDER, "assets", "imgs", "nofaces_0.jpg")
+        ASSETS_FOLDER, "imgs", "nofaces_0.jpg")
     image = cv.imread(image_relative_path)
     fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=False)
     fd.face_detect()

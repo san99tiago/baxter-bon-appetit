@@ -5,6 +5,7 @@ import os
 
 # My own imports
 import face_detect_hc as fdhc
+import get_assets_folder as gaf
 
 # General module imports
 import cv2 as cv
@@ -22,6 +23,7 @@ class CorrectFramesCounter:
         # check_results if video loaded correctly
         if (self.CAP.isOpened() == False):
             print("Error opening video stream or file")
+            return False
         else:
             while (self.CAP.isOpened()):
                 # Get specific read image from each instant from CAP capture
@@ -43,10 +45,10 @@ class CorrectFramesCounter:
 
                     # Exit when "q" is pressed
                     if (cv.waitKey(1) & 0xFF == ord("q")):
-                        break
+                        return True
 
                 else:
-                    break
+                    return True
 
         # When CAP is finished processing, close the capture object
         self.CAP.release()
@@ -55,33 +57,25 @@ class CorrectFramesCounter:
 
 
 if __name__ == "__main__":
-    ROOT_FOLDER = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), os.path.pardir))
-
-    # CAP = cv.VideoCapture(os.path.join(
-    #     ROOT_FOLDER, "assets", "videos", "sample_video_0.mp4"))
-
-    # fourcc = cv.VideoWriter_fourcc(*'MJPG')
-    # OUT = cv.VideoWriter("sample_video_0_output.avi", fourcc,
-    #                      20.0, (int(CAP.get(3)), int(CAP.get(4))))
+    # Get assets folder in repo for the samples
+    ASSETS_FOLDER = gaf.get_assets_folder_path()
 
     CAP = cv.VideoCapture(os.path.join(
-        ROOT_FOLDER, "assets", "videos", "sample_video_multiple_faces_0.mp4"))
+        ASSETS_FOLDER, "videos", "sample_video_0.mp4"))
 
     fourcc = cv.VideoWriter_fourcc(*'MJPG')
-    OUT = cv.VideoWriter("sample_video_multiple_faces_0_results.avi", fourcc,
+    OUT = cv.VideoWriter("sample_video_0_output.avi", fourcc,
                          20.0, (int(CAP.get(3)), int(CAP.get(4))))
 
     # Run main frame analyzer
     check_results = CorrectFramesCounter(CAP, OUT)
-    check_results.main()
+    if (check_results.main() == True):
+        # Gather frame analyzer results
+        total = check_results.total_frames
+        correct = check_results.correct_frames
+        success = str((float(correct) / float(total)) * 100)
 
-    # Gather frame analyzer results
-    total = check_results.total_frames
-    correct = check_results.correct_frames
-    success = str((float(correct) / float(total)) * 100)
-
-    print("\n\n----------- RESULTS -----------")
-    print(" --> Total Frames: {}".format(total))
-    print(" --> Correct Frames: {}".format(correct))
-    print(" --> Succes Rate: {0} %".format(success))
+        print("\n\n----------- RESULTS -----------")
+        print(" --> Total Frames: {}".format(total))
+        print(" --> Correct Frames: {}".format(correct))
+        print(" --> Succes Rate: {0} %".format(success))

@@ -8,6 +8,7 @@ import time
 
 # My own imports
 import face_detect_hc as fdhc
+import get_assets_folder as gaf
 
 # General module imports
 import cv2 as cv
@@ -26,6 +27,7 @@ class TotalResourcesAnalyzer:
         # check_results if video loaded correctly
         if (self.CAP.isOpened() == False):
             print("Error opening video stream or file")
+            return False
         else:
             while (self.CAP.isOpened()):
                 # Get specific read image from each instant from CAP capture
@@ -33,7 +35,8 @@ class TotalResourcesAnalyzer:
 
                 if ret == True:
                     # Apply face_detect algorithm to each image capture
-                    fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=True)
+                    fd = fdhc.FaceDetector(
+                        image, show_results=True, only_biggest_face=True)
                     faces = fd.face_detect()
 
                     self.cpu.append(psutil.cpu_percent(interval=None))
@@ -41,10 +44,10 @@ class TotalResourcesAnalyzer:
 
                     # Exit when "q" is pressed
                     if (cv.waitKey(1) & 0xFF == ord("q")):
-                        break
+                        return True
 
                 else:
-                    break
+                    return True
 
         # When CAP is finished processing, close the capture object
         self.CAP.release()
@@ -83,14 +86,15 @@ class TotalResourcesAnalyzer:
         figure_2.patch.set_facecolor((0.2, 1, 1))
         plt.show()
 
+
 if __name__ == "__main__":
-    ROOT_FOLDER = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), os.path.pardir))
+    # Get assets folder in repo for the samples
+    ASSETS_FOLDER = gaf.get_assets_folder_path()
 
     CAP = cv.VideoCapture(os.path.join(
-        ROOT_FOLDER, "assets", "videos", "sample_video_0.mp4"))
+        ASSETS_FOLDER, "videos", "sample_video_0.mp4"))
 
     # Run main frame analyzer
     check_results = TotalResourcesAnalyzer(CAP)
-    check_results.main()
-    check_results.plot_resources()
+    if (check_results.main() == True):
+        check_results.plot_resources()
