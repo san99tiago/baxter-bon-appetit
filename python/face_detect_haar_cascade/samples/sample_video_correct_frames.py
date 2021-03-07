@@ -58,11 +58,18 @@ if __name__ == "__main__":
     ROOT_FOLDER = os.path.abspath(os.path.join(
         os.path.dirname(__file__), os.path.pardir))
 
+    # CAP = cv.VideoCapture(os.path.join(
+    #     ROOT_FOLDER, "assets", "videos", "sample_video_0.mp4"))
+
+    # fourcc = cv.VideoWriter_fourcc(*'MJPG')
+    # OUT = cv.VideoWriter("sample_video_0_output.avi", fourcc,
+    #                      20.0, (int(CAP.get(3)), int(CAP.get(4))))
+
     CAP = cv.VideoCapture(os.path.join(
-        ROOT_FOLDER, "assets", "videos", "sample_video_0.mp4"))
+        ROOT_FOLDER, "assets", "videos", "sample_video_multiple_faces_0.mp4"))
 
     fourcc = cv.VideoWriter_fourcc(*'MJPG')
-    OUT = cv.VideoWriter("sample_video_0_output.avi", fourcc,
+    OUT = cv.VideoWriter("sample_video_multiple_faces_0_results.avi", fourcc,
                          20.0, (int(CAP.get(3)), int(CAP.get(4))))
 
     # Run main frame analyzer

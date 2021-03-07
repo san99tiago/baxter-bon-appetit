@@ -46,6 +46,7 @@ class FaceDetector:
                 cv.rectangle(self.image, (x, y),
                              (x + w, y + h), (255, 255, 55), 3)
             cv.imshow("FACES DETECTED", self.image)
+            print("Found faces correctly in given image!")
 
         return self.faces
 
@@ -61,7 +62,8 @@ class FaceDetector:
         # Detect faces in the image (vector of faces with rectangle dimensions)
         self.faces = self.face_cascade.detectMultiScale(
             gray_image,
-            scaleFactor=1.15,
+            # scaleFactor=1.15,
+            scaleFactor=1.10,
             minNeighbors=5,
             minSize=(30, 30),
             flags=cv.CASCADE_SCALE_IMAGE

@@ -1,0 +1,4 @@
+----------- FDHC RESULTS -----------
+ --> Total Frames: 455
+ --> Correct Frames: 455
+ --> Succes Rate: 100.0 %
