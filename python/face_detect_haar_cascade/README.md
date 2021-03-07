@@ -2,7 +2,7 @@
 
 ## Creating our Virtual Environment
 
-For correct functionalities and future scalability, we should be working in a virtual environment to isolate our project and run it correctly. We are working with "venv".
+For correct functionalities and future scalability, we should be working in a virtual environment to isolate our project and run it correctly. We are working with "virtualenv" and Python 2.7.
 
 ## Add Project Dependencies
 

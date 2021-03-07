@@ -14,6 +14,8 @@ setup(
     # Package version (MAJOR_VERSION.MINOR_VERSION.MAINTENANCE_VERSION)
     version='0.0.1',
 
+    url="https://github.com/san99tiago/tesis",
+
     # Simple package description
     description='Face detection library implemented with examples',
 
@@ -37,6 +39,15 @@ setup(
             "pytest",
         ],
     },
+
+    classifiers=[
+        "Programming Language :: Python :: 2.7",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Development Status :: 3 - Alpha"
+    ],
+
+    license="MIT License",
 
     # Add extra XML and JSONs needed
     include_package_data=True
