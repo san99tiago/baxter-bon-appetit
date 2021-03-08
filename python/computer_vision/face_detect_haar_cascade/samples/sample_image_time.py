@@ -15,7 +15,7 @@ import get_assets_folder as gaf
 def process_one_image_face():
     # Sample 1
     image_relative_path = os.path.join(
-        ASSETS_FOLDER, "assets", "imgs", "faces_0.jpg")
+        ASSETS_FOLDER, "imgs", "faces_0.jpg")
     image = cv.imread(image_relative_path)
     fd = fdhc.FaceDetector(image, show_results=False, only_biggest_face=False)
     fd.face_detect()
