@@ -3,8 +3,6 @@
 # Built-int imports
 import os
 import math
-import time
-
 
 # My own imports
 import face_detect_hc as fdhc
@@ -57,11 +55,9 @@ class TotalResourcesAnalyzer:
         # Show general results
         print(" ------ RESULTS -----")
         print("--> CPU PERCENTAGE:")
-        print(len(self.cpu))
         print(self.cpu)
         print(np.mean(self.cpu))
         print("--> MEMORY PERCENTAGE:")
-        print(len(self.memory))
         print(self.memory)
         print(np.mean(self.memory))
 
@@ -92,7 +88,7 @@ if __name__ == "__main__":
     ASSETS_FOLDER = gaf.get_assets_folder_path()
 
     CAP = cv.VideoCapture(os.path.join(
-        ASSETS_FOLDER, "videos", "sample_video_0.mp4"))
+        ASSETS_FOLDER, "videos", "sample_video_1.mp4"))
 
     # Run main frame analyzer
     check_results = TotalResourcesAnalyzer(CAP)

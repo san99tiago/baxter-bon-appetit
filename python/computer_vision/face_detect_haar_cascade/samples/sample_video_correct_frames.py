@@ -61,11 +61,13 @@ if __name__ == "__main__":
     ASSETS_FOLDER = gaf.get_assets_folder_path()
 
     CAP = cv.VideoCapture(os.path.join(
-        ASSETS_FOLDER, "videos", "sample_video_0.mp4"))
+        ASSETS_FOLDER, "videos", "sample_video_1.mp4"))
 
     fourcc = cv.VideoWriter_fourcc(*'MJPG')
-    OUT = cv.VideoWriter("sample_video_0_output.avi", fourcc,
+    OUT = cv.VideoWriter("sample_video_1_output.avi", fourcc,
                          20.0, (int(CAP.get(3)), int(CAP.get(4))))
+
+    start_time = time.time()
 
     # Run main frame analyzer
     check_results = CorrectFramesCounter(CAP, OUT)
@@ -79,3 +81,4 @@ if __name__ == "__main__":
         print(" --> Total Frames: {}".format(total))
         print(" --> Correct Frames: {}".format(correct))
         print(" --> Succes Rate: {0} %".format(success))
+        print(" ---- %s seconds ----" % (time.time() - start_time))
