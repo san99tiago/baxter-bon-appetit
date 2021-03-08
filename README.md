@@ -6,7 +6,7 @@ approach of a "Feeding Robot" that helps people with disabilities to properly ea
 We will be working on multiple projects like:
 * Computer Vision for face_detection and anomalies_recognition.
 * Robotics algorithms developed for Baxter robot.
-* Architecture of multiple nodes usign ROS and some of our own-designed packages.
+* Architecture of multiple nodes using ROS and some of our own-designed packages.
 * Some important notes, tests and analysis to keep in mind when working with Baxter robot.
 
 
@@ -59,18 +59,20 @@ match with the native Baxter [Robot Operating System](https://www.ros.org) infra
 
 To dive deeper into the structure of these projects, you can go to:
 
-* [Face Detection Algorithms](python/face_detect_haar_cascade)
+* [Face Detection Algorithm With Haar Cascade Classifier](python/computer_vision/face_detect_haar_cascade)
+* [Face Detection Algorithms With Face Recognition Library](python/computer_vision/face_detect_face_recognition)
+
 
 ---
 
-## Usage :pencil2:
+## USAGE :pencil2:
 All projects are really well commented. Most of them have specifications in the README.md section and remarks for their purpose and I/O workflow. <br>
 We will be uploading most of the files, and try to keep it as clean as possible.<br>
 * Some video tests won't be uploaded, so that we don't have many binaries in the version control system.<br>
 
 ---
 
-## Authors :musical_keyboard:
+## AUTHORS :musical_keyboard:
 
 ### Santiago Garcia Arango
 <img src="assets/imgs/SantiagoGarcia.jpg" width=30%> <br>
@@ -89,6 +91,6 @@ He has skills with problem-solving for real-life applications. He is passionate 
 
 ---
 
-## Special thanks :gift:
+## SPECIAL THANKS :gift:
 * Thanks to our professors and friends: Dolly Tatiana Manrique Espindola.
 * Thanks to all contributors for the great OpenSource projects that we are using. 
