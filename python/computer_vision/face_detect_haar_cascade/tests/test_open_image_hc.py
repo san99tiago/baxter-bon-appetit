@@ -8,8 +8,11 @@ import os
 import cv2 as cv
 import numpy as np
 
-ROOT_FOLDER = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir))
+# My own imports
+import get_assets_folder as gaf
+
+# Get assets folder in repo for the samples
+ASSETS_FOLDER = gaf.get_assets_folder_path()
 
 
 class TestOpenImage:
@@ -25,7 +28,7 @@ class TestOpenImage:
         Test that an real opened image must return correct size
         """
         im_path = os.path.abspath(os.path.join(
-            ROOT_FOLDER, "assets", "imgs", "faces_0.jpg"))
+            ASSETS_FOLDER, "imgs", "faces_0.jpg"))
         # print(im_path)
         real_image = cv.imread(im_path)
         # print(real_image)

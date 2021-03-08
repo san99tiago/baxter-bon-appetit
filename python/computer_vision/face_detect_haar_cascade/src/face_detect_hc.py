@@ -1,5 +1,4 @@
-# ATTEMPT FOR FACIAL DETECTION
-# Santiago Garcia Arango
+# FACE DETECT USING HAAR CASCADE CLASSIFIER
 # Inspired by: https://realpython.com/face-recognition-with-python/
 
 # Built-in imports
@@ -9,9 +8,10 @@ import os
 import cv2 as cv
 import numpy as np
 
+# Root folder for the HaarCascade Classifier
 ROOT_FOLDER = os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.path.pardir))
-print("ROOT_FOLDER --> ", ROOT_FOLDER)
+print("\nROOT_FOLDER --> " + ROOT_FOLDER)
 
 
 class FaceDetector:
@@ -83,11 +83,5 @@ class FaceDetector:
 
 
 if __name__ == "__main__":
-    print("--- LOOK FOR TESTS AND SAMPLES TO SEE HOW TO USE IT ---")
+    print("\n--- LOOK FOR TESTS AND SAMPLES TO SEE HOW TO USE IT ---\n")
 
-    im_path = os.path.abspath(os.path.join(
-        ROOT_FOLDER, "assets", "imgs", "faces_1.jpg"))
-    real_image = cv.imread(im_path)
-    fd = FaceDetector(real_image, show_results=True, only_biggest_face=True)
-    print(fd.face_detect())
-    cv.waitKey(0)

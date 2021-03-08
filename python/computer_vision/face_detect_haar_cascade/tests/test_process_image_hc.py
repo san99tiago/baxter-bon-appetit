@@ -10,9 +10,10 @@ import numpy as np
 
 # My own imports
 import face_detect_hc as fdhc
+import get_assets_folder as gaf
 
-ROOT_FOLDER = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir))
+# Get assets folder in repo for the samples
+ASSETS_FOLDER = gaf.get_assets_folder_path()
 
 
 class TestProcessImage:
@@ -21,7 +22,7 @@ class TestProcessImage:
         Test that an real opened image without faces doen't return faces
         """
         im_path = os.path.abspath(os.path.join(
-            ROOT_FOLDER, "assets", "imgs", "nofaces_0.jpg"))
+            ASSETS_FOLDER, "imgs", "nofaces_0.jpg"))
         real_image = cv.imread(im_path)
         fd = fdhc.FaceDetector(real_image, show_results=False, only_biggest_face=True)
         faces = fd.face_detect()
@@ -32,7 +33,7 @@ class TestProcessImage:
         Test that an real opened image with one face, returns one face
         """
         im_path = os.path.abspath(os.path.join(
-            ROOT_FOLDER, "assets", "imgs", "faces_0.jpg"))
+            ASSETS_FOLDER, "imgs", "faces_0.jpg"))
         real_image = cv.imread(im_path)
         fd = fdhc.FaceDetector(real_image, show_results=False, only_biggest_face=True)
         faces = fd.face_detect()
@@ -46,7 +47,7 @@ class TestProcessImage:
         Test that an real opened image with two face, returns two faces
         """
         im_path = os.path.abspath(os.path.join(
-            ROOT_FOLDER, "assets", "imgs", "faces_1.jpg"))
+            ASSETS_FOLDER, "imgs", "faces_1.jpg"))
         real_image = cv.imread(im_path)
         fd = fdhc.FaceDetector(real_image, show_results=False, only_biggest_face=False)
         faces = fd.face_detect()
