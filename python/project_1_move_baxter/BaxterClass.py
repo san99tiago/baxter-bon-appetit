@@ -22,7 +22,7 @@ class baxterClass():
         # Medidas adicionales
         self.L = 0.27800
         self.h = 0.06400
-        self.H = 1.10400
+        self.H = 1.10400# - 0.0601
 
     # Definimos los metodos de baxter
     def fpk(self, dof, arm, ndof):
@@ -37,13 +37,4 @@ class baxterClass():
 
 
 if __name__ == '__main__':
-    baxter1 = baxterClass()
-    matrix = baxter1.fpk([math.radians(10), math.radians(20), 0, math.radians(40),
-                          math.radians(50), math.radians(60), math.radians(70)],
-                         'l', 6)
-    print('Cinematica directa:\n')
-    print(matrix)
-    print('\n')
-    dof_melaje = baxter1.ipk(matrix, 'l', 'u')
-    print('Cinematica inversa')
-    print(dof_melaje)
+    pass

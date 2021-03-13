@@ -23,5 +23,4 @@ def rotation_matrix_expand(angles):
 
 
 if __name__ == '__main__':
-    a = rotation_matrix_expand([0.7854, 1.5708, 0])
-    print(a)
+    pass
