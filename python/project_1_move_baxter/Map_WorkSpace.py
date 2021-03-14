@@ -23,28 +23,25 @@ def main():
     b1 = bc.baxterClass()
 
     # Abrimos el archivo donde se almacenara la informacion
-    #cartesianPoint = open(sys.argv[2],'a')
+    cartesianPoint = open(sys.argv[2],'a')
     point = b1.fpk(datostheta['r'],'r',7)[:3,3:4]
 
     while not rospy.is_shutdown():
         # Calculamos los puntos cartesianos 
         if sys.argv[1] == 'r': 
-            #point = b1.fpk(datostheta['r'],'r',7)[:3,3:4]
+            # point = b1.fpk(datostheta['r'],'r',7)[:3,3:4]
             point = b1.fpk(datostheta['r'],'r',7)
         if sys.argv[1] == 'l':
-            #point = b1.fpk(datostheta['l'],'l',7)[:3,3:4]
+            # point = b1.fpk(datostheta['l'],'l',7)[:3,3:4]
             point = b1.fpk(datostheta['l'],'l',7)
 
-        #print('/n')
-        #print(datostheta)
+        print('/n')
+        print(np.array2string(point))
 
         # Guardamos la informacion
-        #savePoint = '['+ str(point[0,0])+','+str(point[1,0])+','+str(point[2,0])+']\n'
-        savePoint = point
-        #cartesianPoint.write(np.array2string(savePoint))
-        #print savePoint
-        dof = b1.ipk(savePoint,'r','u')
-        print dof
+        # savePoint = '['+ str(point[0,0])+','+str(point[1,0])+','+str(point[2,0])+']\n'
+        # cartesianPoint.write(savePoint)
+        # print (savePoint)
         rate.sleep()
 
 
@@ -52,6 +49,6 @@ if __name__ == '__main__':
     try:
         datostheta = {'r':[0,0,0,0,0,0,0],'l':[0,0,0,0,0,0,0]}
         main()
-        #cartesianPoint.close()
+        cartesianPoint.close()
     except rospy.ROSInterruptException:
 		print 'BAXTER ERROR'
