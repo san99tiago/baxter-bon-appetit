@@ -4,8 +4,6 @@
 import math
 
 # Own imports
-import IPK
-import FPK
 import baxter_fpk
 import baxter_ipk
 
@@ -56,7 +54,7 @@ class BaxterClass():
 
     def define_baxter_transformation_matrices(self):
         """
-        Definie a series of constant Transformation Matrices necessary to
+        Define a series of constant Transformation Matrices necessary to
         map the workspace before and after Baxter's Denavit-Hartenberg approach.
         """
 
