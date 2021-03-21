@@ -87,7 +87,7 @@ function [vdof] = IPK(FPK,ds,arm,type)
    %% Definimos el vector de los dof
    switch(type)
        case 'u'
-           vdof = [t1;t2(1);t4(1);t5;t6;t7];
+           vdof = [t1;t2(1);0;t4(1);t5;t6;t7];
        case 'd'
            vdof = [t1;t2(2);t4(2);t5;t6;t7];
    end
