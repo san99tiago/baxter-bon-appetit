@@ -17,7 +17,6 @@ classdef BaxterClass
         l3 = 0.06900;
         l4 = 0.37429;
         l5 = 0.01000;
-        %l5 = 0;
         l6 = 0.36830;
         % Medidas adicionales 
         L = 0.27800;
