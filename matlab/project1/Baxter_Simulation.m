@@ -2,8 +2,9 @@
 %{ 
     File: Baxter_Simulation.m
     Class: Industrial Robotics 
-    Author: Elkin Javier Guerra Galeano
-    Created on 09-18-2020, 19:27
+    Authors:
+     Elkin Javier Guerra Galeano
+     Santiago Garcia Arango
 %}
 
 % Simulacion trayectorias suaves robot Baxter

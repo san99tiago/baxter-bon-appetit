@@ -2,8 +2,9 @@
 %{ 
     File: Baxter_Workspace.m
     Class: Grade Work 1 
-    Author: Elkin Javier Guerra Galeano and Santiago Garcia Arango
-    Created on 02-28-2021, 11:00
+    Authors:
+     Elkin Javier Guerra Galeano
+     Santiago Garcia Arango
 %}
 
 function [right_index,left_index] = Baxter_Workspace(right_limb_data,left_limb_data)

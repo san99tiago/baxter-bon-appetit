@@ -2,8 +2,9 @@
 %{ 
     File: TPK.m
     Class: Industrial Robotics 
-    Author: Elkin Javier Guerra Galeano
-    Created on 09-16-2020, 16:49
+    Authors:
+     Elkin Javier Guerra Galeano
+     Santiago Garcia Arango
 %}
 
 % Definimos la funcion para calcular la TPK

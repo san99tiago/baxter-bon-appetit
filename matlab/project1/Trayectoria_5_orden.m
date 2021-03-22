@@ -2,8 +2,9 @@
 %{ 
     File: Trayectoria_5_orden.m
     Class: Industrial Robotics 
-    Author: Elkin Javier Guerra Galeano
-    Created on 09-15-2020, 20:59
+    Authors:
+     Elkin Javier Guerra Galeano
+     Santiago Garcia Arango
 %}
 
 function [p,v,a,j] = Trayectoria_5_orden(t,tf,tp0,tpf,tv0,tvf,ta0,taf)

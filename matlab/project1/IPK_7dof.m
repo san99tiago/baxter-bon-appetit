@@ -2,8 +2,9 @@
 %{ 
     File: IPK_7dof.m
     Class: Industrial Robotics
-    Author: Elkin Javier Guerra Galeano
-    Created on 30-16-2020, 13:59
+    Authors:
+     Elkin Javier Guerra Galeano
+     Santiago Garcia Arango
 %}
 
 % Definimos la funcion encargada de calcular la IPK de Baxter on 7 dof

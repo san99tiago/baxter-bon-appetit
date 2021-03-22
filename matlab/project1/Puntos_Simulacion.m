@@ -2,8 +2,9 @@
 %{ 
     File: Puntos_Simulacion.m
     Class: Industrial Robotics 
-    Author: Elkin Javier Guerra Galeano
-    Created on 09-17-2020, 18:06
+    Authors:
+     Elkin Javier Guerra Galeano
+     Santiago Garcia Arango
 %}
 
 % Definimos la funcion asociada a encontrar los puntos 

@@ -2,8 +2,9 @@
 %{ 
     File: Exe_Sim_Baxter.m
     Class: Industrial Robotics 
-    Author: Elkin Javier Guerra Galeano
-    Created on 09-19-2020, 10:51
+    Authors:
+     Elkin Javier Guerra Galeano
+     Santiago Garcia Arango
 %}
 
 % Definimos la funcion encargada de los parametros para la simulacion 

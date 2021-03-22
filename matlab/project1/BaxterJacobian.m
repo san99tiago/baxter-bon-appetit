@@ -2,8 +2,9 @@
 %{ 
     File: BaxterJacobian.m
     Class: Industrial Robotics 
-    Author: Elkin Javier Guerra Galeano
-    Created on 30-16-2020, 14:30
+    Authors:
+     Elkin Javier Guerra Galeano
+     Santiago Garcia Arango
 %} 
 
 % Definimos la funcion asociada a evaluar el jacobiano de Baxter

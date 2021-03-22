@@ -2,8 +2,9 @@
 %{ 
     File: DirectCinematic.m
     Class: Industrial Robotics 
-    Author: Elkin Javier Guerra Galeano
-    Created on 09-03-2020, 21:42
+    Authors:
+     Elkin Javier Guerra Galeano
+     Santiago Garcia Arango
 %}
 
 function [DC_TMatrix_Out] = DirectCinematic(TableOfParams, type)

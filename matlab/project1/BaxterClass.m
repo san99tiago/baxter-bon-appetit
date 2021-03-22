@@ -2,8 +2,9 @@
 %{ 
     File: BaxterClass.m
     Class: Industrial Robotics 
-    Author: Elkin Javier Guerra Galeano
-    Created on 09-16-2020, 16:14
+    Authors:
+     Elkin Javier Guerra Galeano
+     Santiago Garcia Arango
 %}
 
 % Definimos la clase BAXTER 
