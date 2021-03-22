@@ -67,8 +67,8 @@ function [right_index,left_index] = Baxter_Workspace(right_limb_data,left_limb_d
                (left_limb_data(:,3)-P_wo_0_l(3)).^2);
     
     % Plot the Baxter's workspace
-    plot3(P_wo_0_r(1),P_wo_0_r(2),P_wo_0_r(3),'.','MarkerSize',20,'Color','black')
-    plot3(P_wo_0_l(1),P_wo_0_l(2),P_wo_0_l(3),'.','MarkerSize',20,'Color','black')
+    plot3(P_wo_0_r(1),P_wo_0_r(2),P_wo_0_r(3),'.','MarkerSize',20,'Color','r')
+    plot3(P_wo_0_l(1),P_wo_0_l(2),P_wo_0_l(3),'.','MarkerSize',20,'Color','r')
     
     trisurf(K_r,rdt.Points(:,1),rdt.Points(:,2),rdt.Points(:,3),C_r,...
             'FaceAlpha',0.6,'LineStyle','none')
