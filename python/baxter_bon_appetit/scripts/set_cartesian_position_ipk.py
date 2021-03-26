@@ -21,20 +21,20 @@ def set_position(tm_w0_tool, limb):
     """
     Generate Baxter's commands to move arms based on Baxter Interface.
     """
-    b1 = bc.baxterClass()
+    b1 = bc.BaxterClass()
     right_limb = baxter_interface.Limb('right')
     left_limb = baxter_interface.Limb('left')
     left_limb_names = left_limb.joint_names()
     right_limb_names = right_limb.joint_names()
 
     if limb == 'right':
-        joints_values = b1.ipk(tm_w0_tool, 'r', 'u')
+        joints_values = b1.ipk(tm_w0_tool, 'right', 'up')
         joint_command = convert_list2dict(right_limb_names, joints_values)
         print(joint_command)
         right_limb.move_to_joint_positions(joint_command)
 
     if limb == 'left':
-        joints_values = b1.ipk(tm_w0_tool, 'l', 'u')
+        joints_values = b1.ipk(tm_w0_tool, 'left', 'up')
         joint_command = convert_list2dict(left_limb_names, joints_values)
         print(joint_command)
         left_limb.move_to_joint_positions(joint_command)
@@ -59,10 +59,12 @@ def convert_list2dict(keys, values):
 if __name__ == '__main__':
     try:
         tm_w0_tool = np.array(
-            [[-0.11347392,  0.48550109, -0.86684045, -1.01236464],
-             [-0.03542536, -0.87389812, -0.48481659, -0.54508842],
-             [-0.99290922, -0.0243059,   0.1163637,   1.12681583],
-             [0,          0,          0,          1.]]
+
+        [[-0.04483493,  0.99897278, -0.00657433, -0.30591274],
+        [-0.15247979, -0.01334699, -0.98821646, -1.05189265],
+        [-0.98728909, -0.04330416,  0.15292157,  1.1813471 ],
+        [ 0,          0,          0,          1        ]]
+
         )
         limb = "right"
 

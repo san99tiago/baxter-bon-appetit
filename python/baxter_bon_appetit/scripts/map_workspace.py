@@ -91,7 +91,7 @@ if __name__ == '__main__':
         # Verify if we save the info or not
         if (save_info == "y"):
             # Create/Open the main file to save the Workspace information
-            workspace_file = open(sys.argv[3], 'a')
+            workspace_file = open(sys.argv[4], 'a')
             map_baxter_workspace(limb, save_info, point_or_matrix)
             workspace_file.close()
         else:
