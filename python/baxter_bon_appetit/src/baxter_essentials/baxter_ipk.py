@@ -40,7 +40,7 @@ class BaxterIPK:
     def calibrate_baxter_transformation_matrices(self):
         X_OFFSET = 0
         Y_OFFSET = 0
-        Z_OFFSET = 0
+        Z_OFFSET = - 0.06012
 
         calibration_matrix = np.array(
             [[1, 0, 0, X_OFFSET],
@@ -48,8 +48,9 @@ class BaxterIPK:
              [0, 0, 1, Z_OFFSET],
              [0, 0, 0, 1]]
         )
-        self.baxter_transformation_matrices[0] = \
-            np.dot(self.baxter_transformation_matrices[0], calibration_matrix)
+        # Add extra tool distance for Baxter's right limb (spoon)
+        self.baxter_transformation_matrices[1] = \
+            np.dot(self.baxter_transformation_matrices[1], calibration_matrix)
 
     def ipk(self):
         """
@@ -106,13 +107,21 @@ class BaxterIPK:
         tt21 = (-b + cmath.sqrt(b**2-4*a*c))/(2*a)
         tt22 = (-b - cmath.sqrt(b**2-4*a*c))/(2*a)
 
+        print(tt21)
+
         t21 = 2*math.atan(tt21)
         t22 = 2*math.atan(tt22)
 
-        if abs(t21.imag) != 0:
+        if abs(t21.imag) < 2:
             t21 = t21.real
-        if abs(t22.imag) != 0:
+        else:
+            print("Big imaginary part in t21.")
+        if abs(t22.imag) < 2:
             t21 = t22.real
+        else:
+            print("Big imaginary part in t21.")
+
+        print(t21)
 
         # Find theta4
         t41 = math.atan2(-TM_0_6[2, 3] -
