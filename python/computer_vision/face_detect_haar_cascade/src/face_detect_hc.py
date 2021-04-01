@@ -11,7 +11,7 @@ import numpy as np
 # Root folder for the HaarCascade Classifier
 ROOT_FOLDER = os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.path.pardir))
-print("\nROOT_FOLDER --> " + ROOT_FOLDER)
+print("\nROOT_FOLDER. --> " + ROOT_FOLDER)
 
 
 class FaceDetector:
@@ -32,7 +32,7 @@ class FaceDetector:
         if (type(self.faces) is tuple):
             if (self.show_results == True):
                 print("Found 0 faces in given image!")
-                cv.imshow("FACES DETECTED", self.image)
+                cv.imshow("image", self.image)
             return self.faces
 
         # Apply extra filter if only biggest face is desired
@@ -45,7 +45,7 @@ class FaceDetector:
             for (x, y, w, h) in self.faces:
                 cv.rectangle(self.image, (x, y),
                              (x + w, y + h), (255, 255, 55), 3)
-            cv.imshow("FACES DETECTED", self.image)
+            cv.imshow("image", self.image)
             print("Found faces correctly in given image!")
 
         return self.faces

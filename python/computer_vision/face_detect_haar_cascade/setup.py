@@ -27,11 +27,11 @@ setup(
     package_dir={'': 'src'},
 
     # Add library dependencies
-    install_requires=[
-        "numpy",
-        "matplotlib",
-        "opencv-python==4.2.0.32",
-    ],
+    # install_requires=[
+    #     "numpy",
+    #     "matplotlib",
+    #     "opencv-python",
+    # ],
 
     # Add devlopment dependencies
     extras_require={
