@@ -14,7 +14,7 @@ import numpy as np
 class BaxterClass():
     """
     Baxter class for defining general-purpose distances and methods for Baxter
-    robot.
+    Robot that are commonly implemented in other scripts/classes.
     """
 
     def __init__(self):
@@ -26,7 +26,7 @@ class BaxterClass():
         ]
         self.baxter_transformation_matrices = [
             self.TM_W0_BL, self.TM_W0_BR, self.TM_BL_0, self.TM_BR_0,
-            self.TM_7_GL, self.TM_7_GR
+            self.TM_7_GL, self.TM_7_GR, self.TM_left_limb_camera
         ]
 
     def define_baxter_distances(self):
@@ -84,6 +84,14 @@ class BaxterClass():
                                  [0, 0, 1, self.l6],
                                  [0, 0, 0,  1]])
         self.TM_7_GR = self.TM_7_GL
+
+        # Tranformation matrix for left limb position for the camera approach
+        self.TM_left_limb_camera = np.array(
+            [[0.08541563, -0.01183818, -0.99627508, -0.1862726],
+             [-0.01792621, -0.99978581, 0.01034299, -0.8667861],
+             [-0.99618413, 0.01697598, -0.08560955, 1.3585218],
+             [0, 0, 0, 1]]
+        )
 
     def fpk(self, joint_values, limb, ndof):
         """
