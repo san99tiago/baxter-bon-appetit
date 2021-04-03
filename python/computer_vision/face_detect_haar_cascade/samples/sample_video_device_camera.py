@@ -15,7 +15,7 @@ while True:
 
     # Apply face_detect algorithm to each image capture
     fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=True)
-    fd.face_detect()
+    print(fd.face_detect())
 
     # Apply delay to obtain desired frequency
     time.sleep(0.1)

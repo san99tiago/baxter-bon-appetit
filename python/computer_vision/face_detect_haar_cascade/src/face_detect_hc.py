@@ -27,6 +27,7 @@ class FaceDetector:
 
         self.generate_haar_cascade_clasifier()
         self.apply_haar_cascade_clasifier()
+        self.find_center_values()
 
         # If self.faces returns a tuple, it means that no faces were found
         if (type(self.faces) is tuple):
@@ -41,10 +42,12 @@ class FaceDetector:
 
         # Only draw face results if the show_results flag is activated
         if (self.show_results == True):
+
             # Draw a rectangle in the face/faces found
             for (x, y, w, h) in self.faces:
                 cv.rectangle(self.image, (x, y),
                              (x + w, y + h), (255, 255, 55), 3)
+
             cv.imshow("image", self.image)
             print("Found faces correctly in given image!")
 
@@ -81,7 +84,14 @@ class FaceDetector:
         # Return a 2d array that contains only biggest face
         return np.reshape(self.faces[biggest_face_index], (-1, 4))
 
+    def find_center_values(self):
+        # Get height and width of the original image
+        self.height, self.width = self.image.shape[:2]
+
+        if self.show_results:
+            cv.rectangle(self.image, (self.width/2, self.height/2),
+                         (self.width/2 + 1, self.height/2 + 1), (0, 0, 255), 5)
+
 
 if __name__ == "__main__":
     print("\n--- LOOK FOR TESTS AND SAMPLES TO SEE HOW TO USE IT ---\n")
-
