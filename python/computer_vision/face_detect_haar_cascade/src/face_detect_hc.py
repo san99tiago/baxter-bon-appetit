@@ -34,7 +34,12 @@ class FaceDetector:
             if (self.show_results == True):
                 print("Found 0 faces in given image!")
                 cv.imshow("image", self.image)
-            return self.faces
+            return {
+                "detected_face": False,
+                "faces": self.faces,
+                "img_height": self.height,
+                "img_width": self.width
+            }
 
         # Apply extra filter if only biggest face is desired
         if (self.only_biggest_face == True):
@@ -51,7 +56,12 @@ class FaceDetector:
             cv.imshow("image", self.image)
             print("Found faces correctly in given image!")
 
-        return self.faces
+        return {
+            "detected_face": True,
+            "faces": self.faces,
+            "img_height": self.height,
+            "img_width": self.width
+        }
 
     def generate_haar_cascade_clasifier(self):
         # Create the haar cascade
