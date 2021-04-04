@@ -89,11 +89,11 @@ class BaxterIPK:
 
         # Find specific limb articulation "s1" (theta2)
         # Remark: If complex, we must approximate to nearest real-value
-        E = 2*self.baxter_distances[10] * \
+        E = 2*self.baxter_distances[11] * \
             (self.baxter_distances[1] - TM_0_6[0, 3]/math.cos(t1))
-        F = 2*self.baxter_distances[10]*TM_0_6[2, 3]
+        F = 2*self.baxter_distances[11]*TM_0_6[2, 3]
         G = (TM_0_6[0, 3]/math.cos(t1))**2 + self.baxter_distances[1]**2 + \
-            self.baxter_distances[10]**2 - self.baxter_distances[4]**2 + \
+            self.baxter_distances[11]**2 - self.baxter_distances[4]**2 + \
             TM_0_6[2, 3]**2 - \
             2*self.baxter_distances[1]*(TM_0_6[0, 3]/math.cos(t1))
 
@@ -125,13 +125,13 @@ class BaxterIPK:
 
         # Find theta4
         t41 = math.atan2(-TM_0_6[2, 3] -
-                         self.baxter_distances[10]*math.sin(t21), TM_0_6[0, 3] /
+                         self.baxter_distances[11]*math.sin(t21), TM_0_6[0, 3] /
                          math.cos(t1) - self.baxter_distances[1] -
-                         self.baxter_distances[10]*math.cos(t21)) - t21
+                         self.baxter_distances[11]*math.cos(t21)) - t21
         t42 = math.atan2(-TM_0_6[2, 3] -
-                         self.baxter_distances[10]*math.sin(t22), TM_0_6[0, 3] /
+                         self.baxter_distances[11]*math.sin(t22), TM_0_6[0, 3] /
                          math.cos(t1) - self.baxter_distances[1] -
-                         self.baxter_distances[10]*math.cos(t22)) - t22
+                         self.baxter_distances[11]*math.cos(t22)) - t22
 
         # Find degrees of freedom related to rotation
         s1 = math.sin(t1)

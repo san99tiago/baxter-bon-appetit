@@ -47,7 +47,7 @@ class BaxterFPK:
             self.dh_table_0_6 = np.array(
                 [[0, 0, 0, self.joint_values[0]],
                  [-math.pi/2, self.baxter_distances[1], 0, self.joint_values[1]],
-                 [0, self.baxter_distances[10], 0,
+                 [0, self.baxter_distances[11], 0,
                      (self.joint_values[3]+math.pi/2)],
                  [math.pi/2, 0, self.baxter_distances[4], self.joint_values[4]],
                  [-math.pi/2, self.baxter_distances[5], 0, self.joint_values[5]],

@@ -21,8 +21,8 @@ class BaxterClass():
         self.define_baxter_distances()
         self.define_baxter_transformation_matrices()
         self.baxter_distances = [
-            self.l0, self.l1, self.l2, self.l3, self.l4, self.l5, self.l6,
-            self.L, self.h, self.H, self.lh
+            self.l0, self.l1, self.l2, self.l3, self.l4, self.l5, self.l6_left,
+            self.l6_right, self.L, self.h, self.H, self.lh
         ]
         self.baxter_transformation_matrices = [
             self.TM_W0_BL, self.TM_W0_BR, self.TM_BL_0, self.TM_BR_0,
@@ -42,7 +42,8 @@ class BaxterClass():
         self.l3 = 0.06900
         self.l4 = 0.37429
         self.l5 = 0.01000
-        self.l6 = 0.36830
+        self.l6_left = 0.36830
+        self.l6_right = 0.36830 + 0.0417 # Right arm with tool distance included
 
         # Baxter's workspace lengths
         self.L = 0.27800
@@ -81,9 +82,12 @@ class BaxterClass():
         # Transformation Matrices from {7} to coordinates of tools {GR} and {GL}
         self.TM_7_GL = np.array([[1, 0, 0,  0],
                                  [0, 1, 0,  0],
-                                 [0, 0, 1, self.l6],
+                                 [0, 0, 1, self.l6_left],
                                  [0, 0, 0,  1]])
-        self.TM_7_GR = self.TM_7_GL
+        self.TM_7_GR = np.array([[1, 0, 0,  0],
+                                 [0, 1, 0,  0],
+                                 [0, 0, 1, self.l6_right],
+                                 [0, 0, 0,  1]])
 
         # Tranformation matrix for left limb position for the camera approach
         self.TM_left_limb_camera = np.array(
