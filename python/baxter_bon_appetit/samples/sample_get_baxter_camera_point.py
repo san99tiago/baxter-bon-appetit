@@ -2,7 +2,7 @@
 
 # Own imports
 import face_detect_hc as fdhc
-import baxter_vision_mapping.baxter_camera_transform_tool_to_face as bcp
+import baxter_vision_mapping.baxter_camera_complete_transform as bcp
 
 # General module imports
 import cv2 as cv
@@ -21,7 +21,7 @@ while True:
     print(faces)
 
     # Apply baxter_camera_point processing
-    TM_w0_face = bcp.BaxterCameraToolToFace(faces, 3).get_tm_from_tool_to_face()
+    TM_w0_face = bcp.BaxterCameraCompleteTransform(faces, 1).get_tm_from_w0_to_face()
 
     # Apply delay to obtain desired frequency
     time.sleep(0.1)

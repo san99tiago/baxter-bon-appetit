@@ -118,9 +118,6 @@ class BaxterCameraToolToFace:
             ]
         ).TM
 
-        # print(self.tm_from_tool_to_cv)
-        # print(self.tm_from_cv_to_face)
-
         self.tm_from_tool_to_face = np.dot(
             self.tm_from_tool_to_cv, self.tm_from_cv_to_face)
 
