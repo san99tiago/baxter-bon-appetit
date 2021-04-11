@@ -6,6 +6,7 @@ import math
 # Own imports
 import baxter_fpk
 import baxter_ipk
+import baxter_jacobian
 
 # General module imports
 import numpy as np
@@ -43,7 +44,7 @@ class BaxterClass():
         self.l4 = 0.37429
         self.l5 = 0.01000
         self.l6_left = 0.36830
-        self.l6_right = 0.36830 + 0.0417 # Right arm with tool distance included
+        self.l6_right = 0.36830 + 0.0417  # Right arm with tool distance included
 
         # Baxter's workspace lengths
         self.L = 0.27800
@@ -144,21 +145,31 @@ class BaxterClass():
             elbow_disposition).ipk()
         return joint_values
 
+    def jacobian(self, joint_values, limb):
+        """
+        Calculate Baxter's Jacobian from w0 to tool.
+            Remark: the expression used was calculated based on the article 
+            "Baxter Humanoid Robot Kinematics" from Ohio University.
+
+        :param joint_values: list of joint-values.
+            example: [value_limb_s0, value_limb_s1, value_limb_left_e0,
+                    value_limb_left_e1, value_limb_left_w0, value_limb_left_w1,
+                    value_limb_left_w2]
+        :param limb: arm to calculate jacobian.
+            example: "left" or "right".
+        """
+
+        return baxter_jacobian.BaxterJacobian(
+            self.baxter_distances,
+            joint_values,
+            limb
+        ).calculate_jacobian()
+
 
 if __name__ == '__main__':
     print(BaxterClass.__doc__)
 
     b1 = BaxterClass()
-
-    # TM_w0_tool = np.array([[0.733, 0.653, 0.190, 0.843],
-    #                     [0.384, -0.628, 0.677, -0.162],
-    #                     [0.562, -0.423, -0.711, 0.661],
-    #                     [0, 0, 0, 1]])
-    # THETAS = b1.ipk(TM_w0_tool, "left", "up")
-
-    # # Convert resulting angles to degrees
-    # THETAS = np.rad2deg(THETAS)
-    # print(THETAS)
 
     # ---------------TEST 1 (real Baxter values)--------------
     theta1 = math.radians(0)
@@ -205,3 +216,28 @@ if __name__ == '__main__':
     print(joint_values)
     print("joint_values_calculated:")
     print(joint_values_calculated)
+
+    # ---------------TEST 3 (real Baxter values)--------------
+    theta1 = math.radians(10)
+    theta2 = math.radians(20)
+    theta3 = math.radians(0)
+    theta4 = math.radians(40)
+    theta5 = math.radians(50)
+    theta6 = math.radians(60)
+    theta7 = math.radians(70)
+
+    joint_values = [theta1, theta2, theta3, theta4, theta5, theta6, theta7]
+
+    TM_w0_tool = b1.fpk(joint_values, "right", 6)
+
+    joint_values_calculated = b1.ipk(TM_w0_tool, "right", "up")
+
+    print("--------- TEST 3 ----------------")
+    print("TM_W0_GL:")
+    print(TM_w0_tool)
+    print("joint_values_original:")
+    print(joint_values)
+    print("joint_values_calculated:")
+    print(joint_values_calculated)
+    print("Jacobian:")
+    print(b1.jacobian(joint_values, "right"))
