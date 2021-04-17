@@ -38,17 +38,33 @@ class CartesianIncrements():
             self.position_goal - self.position_current)
 
         if (position_abs_err > position_step):
-            position_increment = position_step * \
+            self.position_increment = position_step * \
                 (self.position_goal - self.position_current) / position_abs_err
         else:
-            position_increment = self.position_goal - self.position_current
+            self.position_increment = self.position_goal - self.position_current
 
-        return position_increment
+    def calculate_orientation_increment(self):
+        orientation_step = 0.001
+
+        orientation_abs_err = np.linalg.norm(
+            self.orientation_goal - self.orientation_current)
+
+        if (orientation_abs_err > orientation_step):
+            self.orientation_increment = orientation_step * \
+                (self.orientation_goal - self.orientation_current) / \
+                orientation_abs_err
+        else:
+            self.orientation_increment = self.orientation_goal - self.orientation_current
+
+    def calculate_cartesian_increment(self):
+        self.calculate_position_increment()
+        self.calculate_orientation_increment()
+        return np.concatenate([self.position_increment, self.orientation_increment], axis=0)
 
 
 if __name__ == "__main__":
     cartesian_current = np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6]).reshape(6, 1)
-    cartesian_goal = np.array([1.1, 1.2, 1.3, 1.4, 1.5, 1.6]).reshape(6, 1)
+    cartesian_goal = np.array([1, 1, 1, 1.4, 1.5, 1.6]).reshape(6, 1)
     c1 = CartesianIncrements(cartesian_goal, cartesian_current)
 
-    print(c1.calculate_position_increment())
+    print(c1.calculate_cartesian_increment())

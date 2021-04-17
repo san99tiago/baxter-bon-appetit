@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # SAMPLE OF FACE_DETECT_HAAR_CASCADE WITH BAXTER_CAMERA_POINT
 
 # Own imports
