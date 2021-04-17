@@ -44,7 +44,7 @@ class CartesianIncrements():
             self.position_increment = self.position_goal - self.position_current
 
     def calculate_orientation_increment(self):
-        orientation_step = 0.001
+        orientation_step = 0.005
 
         orientation_abs_err = np.linalg.norm(
             self.orientation_goal - self.orientation_current)
