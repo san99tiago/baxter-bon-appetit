@@ -7,7 +7,7 @@ import math
 import numpy as np
 
 # Own imports
-import transformation as transf
+import baxter_essentials.transformation as transf
 
 
 def denavit_hartenberg(dh_table, show_info):

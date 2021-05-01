@@ -4,9 +4,9 @@
 import math
 
 # Own imports
-import baxter_fpk
-import baxter_ipk
-import baxter_jacobian
+import baxter_essentials.baxter_fpk as baxter_fpk
+import baxter_essentials.baxter_ipk as baxter_ipk
+import baxter_essentials.baxter_jacobian as baxter_jacobian
 
 # General module imports
 import numpy as np

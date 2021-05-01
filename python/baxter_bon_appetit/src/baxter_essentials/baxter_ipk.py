@@ -8,7 +8,7 @@ import cmath
 import numpy as np
 
 # Own imports
-import denavit_hartenberg as dh
+import baxter_essentials.denavit_hartenberg as dh
 
 
 class BaxterIPK:
