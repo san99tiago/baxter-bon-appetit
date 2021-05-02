@@ -37,8 +37,8 @@ class MpcController:
             Example: np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]).reshape(7, 1)
         """
         # Define X and U vectors (thetas and delta-thetas for the MPC)
-        thetas = cvxpy.Variable((self.nx, self.N + 1))
-        dthetas = cvxpy.Variable((self.nu, self.N))
+        thetas = cvxpy.Variable(self.nx, self.N + 1)
+        dthetas = cvxpy.Variable(self.nu, self.N)
 
         # Initialize cost function and constraints for the MPC problem
         cost = 0.0
@@ -53,11 +53,11 @@ class MpcController:
             # |[dx, dy, dz, dx_angle, dy_angle, dz_angle]' - Jee * DeltaThetas|^2
             print("cartesian_increment.shape:")
             print(cartesian_increment.shape)
-            print("dthetas[:,t].shape:")
-            print(dthetas[:,t].shape)
+            print("dthetas[:,t]:")
+            print(dthetas[:,t])
             print("jacobian * dthetas[:, t]).shape:")
-            print((jacobian * dthetas[:, t]).shape)
-            inner_error = cartesian_increment - jacobian * dthetas[:, t]
+            #print((jacobian * dtheas[:, t]).shape)
+            inner_error = cartesian_increment - jacobian * dthetas[:,t]
             cost += cvxpy.quad_form(inner_error, np.eye(6))
 
             # Constaint for: Thetas[k+1] = Thetas[k] + DeltaThetas[k]
@@ -103,10 +103,10 @@ class MpcController:
         current_position = current_tm[0:3, 3].reshape(3, 1)
 
         # Get [x_angle, y_angle, z_angle] from current transformation matrix
-        t1 = transf.Transformation(0, 0, 0, [0, 0, 0])  # Fake init (see below)
-        current_orientation_angles = np.array(t1.get_fixed_angles_from_tm(
-            current_tm)).reshape(3, 1)
-
+        t = transf.Transformation(0, 0, 0, [0, 0, 0])  # Fake init (see below)
+        fixed_angles_from_tm = t.get_fixed_angles_from_tm(current_tm)
+        current_orientation_angles = np.array(fixed_angles_from_tm).reshape(3, 1)
+        
         # Concatenate [x, y, z]' and [x_angle, y_angle, z_angle]'
         cartesian_current = np.concatenate(
             [current_position, current_orientation_angles], axis=0)
