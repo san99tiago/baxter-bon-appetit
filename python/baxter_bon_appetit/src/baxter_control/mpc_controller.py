@@ -3,6 +3,7 @@
 # Built-int imports
 import math
 import time
+import sys
 
 # General module imports
 import numpy as np
@@ -37,8 +38,12 @@ class MpcController:
             Example: np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]).reshape(7, 1)
         """
         # Define X and U vectors (thetas and delta-thetas for the MPC)
-        thetas = cvxpy.Variable(self.nx, self.N + 1)
-        dthetas = cvxpy.Variable(self.nu, self.N)
+        if (sys.version_info[0] >= 3):
+            thetas = cvxpy.Variable((self.nx, self.N + 1))
+            dthetas = cvxpy.Variable((self.nu, self.N))
+        else:
+            thetas = cvxpy.Variable(self.nx, self.N + 1)
+            dthetas = cvxpy.Variable(self.nu, self.N)
 
         # Initialize cost function and constraints for the MPC problem
         cost = 0.0
