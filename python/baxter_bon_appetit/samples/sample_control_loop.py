@@ -10,6 +10,7 @@ Authors: Santiago Garcia Arango and Elkin Javier Guerra Galeano.
 
 # Built-int imports
 import time
+import random
 
 # Own imports
 import baxter_essentials.baxter_class as bc
@@ -163,7 +164,7 @@ def test_2_mpc_first_attempt(show_results=True):
 
     # Desired cartesian goal [x_g, y_g, z_g, x_angle_g, y_angle_g, z_angle_g]
     cartesian_goal = np.array(
-        [-0.7, -0.6, 1.1, 2.5, -0.3, -0.2] * N).reshape(6, N)
+        [-0.5, -0.8, 1.0, 2.5, -0.3, -0.2] * N).reshape(6, N)
 
     # ---------- Main Control loop -------------
     # Variables for control loop
@@ -176,7 +177,7 @@ def test_2_mpc_first_attempt(show_results=True):
     cartesian_matrix = np.zeros((cartesian_goal.shape[0], 0))
     cartesian_goal_matrix = np.zeros((cartesian_goal.shape[0], 0))
 
-    total_time_in_seconds = 30
+    total_time_in_seconds = 10
     sample_time_in_seconds = 0.01
     final_time = time.time() + total_time_in_seconds
     last_time = 0
@@ -195,9 +196,9 @@ def test_2_mpc_first_attempt(show_results=True):
             # Apply MPC prediction
             mpc = b_mpc.MpcController(N, True, True)
             cartesian_goal = cartesian_goal + np.array(
-                [0.00 * np.sin(iteration/30),
-                 0.00 * np.sin(iteration/30),
-                 0.00 * np.sin(iteration/30),
+                [0.005 * np.sin(iteration/5),
+                 0.005 * np.sin(iteration/5),
+                 0.005 * np.sin(iteration/5),
                  0,
                  0,
                  0]
@@ -210,6 +211,17 @@ def test_2_mpc_first_attempt(show_results=True):
 
             # Calculate new states based on StateSpace representation
             x_k_plus_1 = x_k + u_k
+
+            # Add "random noise" to measurements (like real-life)
+            x_k_plus_1 = x_k_plus_1 + np.array(
+                [random.uniform(-0.01, 0.01),
+                 random.uniform(-0.01, 0.01),
+                 random.uniform(-0.01, 0.01),
+                 random.uniform(-0.01, 0.01),
+                 random.uniform(-0.01, 0.01),
+                 random.uniform(-0.01, 0.01),
+                 random.uniform(-0.01, 0.01)]
+            ).reshape((7, N))
 
             # Update current state for the next iteration
             x_k = x_k_plus_1
@@ -242,5 +254,5 @@ def test_2_mpc_first_attempt(show_results=True):
 
 if __name__ == '__main__':
     DEBUG_ = True
-    test_1_open_loop(True)
-    # test_2_mpc_first_attempt(False)
+    # test_1_open_loop(True)
+    test_2_mpc_first_attempt(False)
