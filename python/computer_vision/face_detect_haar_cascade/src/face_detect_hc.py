@@ -3,6 +3,7 @@
 
 # Built-in imports
 import os
+import math
 
 # External libraries imports
 import cv2 as cv
@@ -99,8 +100,8 @@ class FaceDetector:
         self.height, self.width = self.image.shape[:2]
 
         if self.show_results:
-            cv.rectangle(self.image, (self.width/2, self.height/2),
-                         (self.width/2 + 1, self.height/2 + 1), (0, 0, 255), 5)
+            cv.rectangle(self.image, (math.floor(self.width/2), math.floor(self.height/2)),
+                         (math.floor(self.width/2) + 1, math.floor(self.height/2) + 1), (0, 0, 255), 5)
 
 
 if __name__ == "__main__":
