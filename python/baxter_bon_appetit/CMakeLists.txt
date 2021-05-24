@@ -9,6 +9,7 @@ find_package(catkin
   cv_bridge
   baxter_core_msgs
   sensor_msgs
+  geometry_msgs
   control_msgs
   trajectory_msgs
   dynamic_reconfigure
@@ -29,6 +30,7 @@ catkin_package(
   cv_bridge
   baxter_core_msgs
   sensor_msgs
+  geometry_msgs
   control_msgs
   trajectory_msgs
   dynamic_reconfigure
