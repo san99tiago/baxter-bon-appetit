@@ -6,6 +6,7 @@ import sys
 
 # Own imports
 import face_detect_hc as fdhc
+import baxter_vision_mapping.baxter_camera_complete_transform as bcp
 
 # General module imports
 import rospy
@@ -98,9 +99,15 @@ class NodePublishFaceCoordinates:
         fd = fdhc.FaceDetector(image, show_results, only_biggest_face=True)
         # print(fd.face_detect())
 
-        # TODO PROCESSING
+        faces = fd.face_detect()
 
-        self.current_coordinates = fd.face_detect()["faces"]
+        # Apply baxter_camera_point processing
+        TM_w0_face = bcp.BaxterCameraCompleteTransform(
+            faces, 1).get_tm_from_w0_to_face()
+
+        self.current_coordinates = TM_w0_face[0:4, 3]
+        print(self.current_coordinates)
+
         cv.waitKey(1)
 
     def execute_publish_coordinates(self):
@@ -115,9 +122,9 @@ class NodePublishFaceCoordinates:
 
             # Create Pose message based on "geometry_msgs"
             p = Pose()
-            p.position.x = coordinates[0][0]
-            p.position.y = coordinates[0][1]
-            p.position.z = coordinates[0][2]
+            p.position.x = coordinates[0]
+            p.position.y = coordinates[1]
+            p.position.z = coordinates[2]
 
             # Make sure the quaternion is valid and normalized
             p.orientation.x = 0.0
