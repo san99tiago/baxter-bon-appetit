@@ -21,10 +21,23 @@ class NodeProportionalControlFromFaceCoordinates:
     ROS Node that subscribes to the face_coordinates publisher and enables the 
     baxter_interface control method to apply a proportional-control action 
     command to move the Baxter's right limb to specific position-orientation.
+
+    :param rospy_rate: integer that defines the frequency for the ROS nodes.
     """
 
-    def __init__(self):
+    def __init__(self, rospy_rate):
         self.define_rotation_matrix()
+        self.rate = rospy.Rate(rospy_rate)
+
+        # TODO: Change this matrix to a constant value as "home" in BaxterClass
+        self.tm_w0_tool = np.array(
+            [
+                [-0.04483493, 0.99897278, -0.00657433, -0.4],
+                -0.15247979, -0.01334699, -0.98821646, -1.0],
+                [-0.98728909, -0.04330416, 0.15292157, 1.0],
+                [ 0, 0, 0, 1]
+            ]
+        )
 
         _face_coordinates_sub = rospy.Subscriber(
             'user/face_coordinates',
@@ -63,8 +76,8 @@ class NodeProportionalControlFromFaceCoordinates:
                 geometry_pose.position.z
             ]
         ).reshape((3, 1))
-
         self.tm_w0_tool = self.create_tm_structure_from_pose_and_rotation()
+        print(self.tm_w0_tool)
 
     def create_tm_structure_from_pose_and_rotation(self):
         """
@@ -97,20 +110,31 @@ class NodeProportionalControlFromFaceCoordinates:
 
         joint_command = dict(zip(right_limb_names, joints_values))
         print(joint_command)
-        self.right_limb.move_to_joint_positions(joint_command)
+        self.right_limb.set_joint_positions(joint_command)
 
     def restore_right_limb_position(self):
         """
         Move Baxter's right limb to neutral position using BaxterInterface.
         """
+        self.right_limb = baxter_interface.Limb('right')
         self.right_limb.move_to_neutral()
+
+    def execute_control(self):
+        """
+        Execute main control loop for Baxter's right arm.
+        """
+        while not rospy.is_shutdown():
+            self.move_baxter_based_on_transformation_matrix()
+            self.rate.sleep()
 
 
 def main():
     print("Initializing node... ")
-    rospy.init_node('proportional_control', anonymous=True)
+    rospy.init_node('proportional_control')
 
-    main_node_proportional_control = NodeProportionalControlFromFaceCoordinates()
+    main_node_proportional_control = NodeProportionalControlFromFaceCoordinates(20)
+
+    main_node_proportional_control.execute_control()
 
     rospy.on_shutdown(
         main_node_proportional_control.restore_right_limb_position)

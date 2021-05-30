@@ -3,6 +3,7 @@
 # Built-int imports
 import time
 import sys
+import numpy as np
 
 # Own imports
 import face_detect_hc as fdhc
@@ -115,6 +116,9 @@ class NodePublishFaceCoordinates:
         Execute the publisher for the face coordinates in an infinite loop 
         based on the rospy_rate given in the __init__ method.
         """
+        # Initial value until it is updated by a callback
+        self.current_coordinates = np.array([0, 0, 0]).reshape((3, 1))
+
         while not rospy.is_shutdown():
             # Acquire coordinates that are being updated from the method
             # ... "limb_cam_process_image_callback"
@@ -141,7 +145,7 @@ def main():
     print("Initializing node... ")
     rospy.init_node('publish_face_coordinates', anonymous=True)
 
-    main_node_face_coordinates = NodePublishFaceCoordinates((1280, 800), 1)
+    main_node_face_coordinates = NodePublishFaceCoordinates((1280, 800), 10)
 
     main_node_face_coordinates.execute_publish_coordinates()
 
