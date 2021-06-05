@@ -58,17 +58,25 @@ def convert_list2dict(keys, values):
 
 if __name__ == '__main__':
     try:
-        tm_w0_tool = np.array(
+        # tm_w0_tool = np.array(
 
-        [[-0.04483493,  0.99897278, -0.00657433, -0.30591274],
-        [-0.15247979, -0.01334699, -0.98821646, -1.05189265],
-        [-0.98728909, -0.04330416,  0.15292157,  1.1813471 ],
-        [ 0,          0,          0,          1        ]]
+        #     [[-0.04854143, 0.99879321, -0.00747311, -0.69522343],
+        #     [-0.15331122, -0.01484379, -0.98806646, -0.96854655],
+        #     [-0.986985, -0.04681645, 0.15384675, 1.23731447],
+        #     [ 0, 0, 0, 1]]
 
-        )
-        limb = "right"
+        # )
+        # limb = "right"
+        # move_baxter_based_on_transformation_matrix(tm_w0_tool, limb)
 
+        tm_w0_tool = bc.BaxterClass().TM_left_limb_camera
+        limb = "left"
         move_baxter_based_on_transformation_matrix(tm_w0_tool, limb)
+
+        tm_w0_tool = bc.BaxterClass().TM_right_limb_home
+        limb = "right"
+        move_baxter_based_on_transformation_matrix(tm_w0_tool, limb)
+
 
     except rospy.ROSInterruptException:
         print('---------- baxter error ------------')

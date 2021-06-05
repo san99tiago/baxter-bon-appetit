@@ -44,7 +44,7 @@ class BaxterClass():
         self.l4 = 0.37429
         self.l5 = 0.01000
         self.l6_left = 0.36830
-        self.l6_right = 0.36830 + 0.0417  # Right arm with tool distance included
+        self.l6_right = 0.36830 + 0.0417 # Right arm with tool distance included
 
         # Baxter's workspace lengths
         self.L = 0.27800
@@ -96,6 +96,13 @@ class BaxterClass():
              [-0.01792621, -0.99978581, 0.01034299, -0.8667861],
              [-0.99618413, 0.01697598, -0.08560955, 1.3585218],
              [0, 0, 0, 1]]
+        )
+
+        self.TM_right_limb_home = np.array(
+            [[ 0.01269254, 0.5253967, -0.85076272, -0.88412728],
+            [-0.058711, -0.84897177, -0.52516659, -0.47108472],
+            [-0.99819433, 0.05661483, 0.02007095, 1.28936195],
+            [ 0, 0, 0, 1]]
         )
 
     def fpk(self, joint_values, limb, ndof):

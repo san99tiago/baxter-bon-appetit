@@ -141,3 +141,11 @@ if __name__ == "__main__":
     print("TM:")
     print(test.TM)
     print(test.get_fixed_angles_from_tm(test.TM))
+
+    TM_right_limb_home = np.array(
+        [[ 0.00929883, 0.91156788, -0.41104445, -0.60197824],
+        [-0.03376183, -0.41054165, -0.9112166, -0.70859866],
+        [-0.99938665,  0.02235086, 0.02695865, 1.29876936],
+        [ 0, 0, 0, 1]]
+    )
+    print(test.get_fixed_angles_from_tm(TM_right_limb_home))

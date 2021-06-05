@@ -67,6 +67,7 @@ def map_baxter_workspace(limb, save_info, point_or_matrix):
 
         elif (point_or_matrix == "matrix"):
             # Save the complete transformation matrix
+            print(joint_states[limb])
             data = b1.fpk(joint_states[limb], limb, 7)
             output = np.array2string(data)
 

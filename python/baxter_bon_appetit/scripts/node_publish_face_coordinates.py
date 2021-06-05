@@ -68,19 +68,19 @@ class NodePublishFaceCoordinates:
         only open the desired one in the <open_camera> method.
         """
         print("Closing all cameras...")
-        cam = CameraController("head_camera")
-        cam.close()
-        cam = CameraController("right_hand_camera")
-        cam.close()
-        cam = CameraController("left_hand_camera")
-        cam.close()
+        # cam = CameraController("head_camera")
+        # cam.close()
+        # cam = CameraController("right_hand_camera")
+        # cam.close()
+        # cam = CameraController("left_hand_camera")
+        # cam.close()
 
     def open_camera(self):
         """
         Open only the desired camera, based on the baxter_camera_name attribute.
         """
         print("Opening {} ...".format(self.baxter_camera_name))
-        cam = CameraController(baxter_camera_name)
+        cam = CameraController(self.baxter_camera_name)
         cam.resolution = self.camera_resolution
         cam.open()
 
@@ -104,7 +104,7 @@ class NodePublishFaceCoordinates:
 
         # Apply baxter_camera_point processing
         TM_w0_face = bcp.BaxterCameraCompleteTransform(
-            faces, 1).get_tm_from_w0_to_face()
+            faces, 0.5 ).get_tm_from_w0_to_face()
 
         self.current_coordinates = TM_w0_face[0:4, 3]
         print(self.current_coordinates)
@@ -145,7 +145,7 @@ def main():
     print("Initializing node... ")
     rospy.init_node('publish_face_coordinates', anonymous=True)
 
-    main_node_face_coordinates = NodePublishFaceCoordinates((1280, 800), 10)
+    main_node_face_coordinates = NodePublishFaceCoordinates((640, 400), 100)
 
     main_node_face_coordinates.execute_publish_coordinates()
 

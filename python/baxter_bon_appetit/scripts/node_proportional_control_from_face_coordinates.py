@@ -33,7 +33,7 @@ class NodeProportionalControlFromFaceCoordinates:
         self.tm_w0_tool = np.array(
             [
                 [-0.04483493, 0.99897278, -0.00657433, -0.4],
-                -0.15247979, -0.01334699, -0.98821646, -1.0],
+                [-0.15247979, -0.01334699, -0.98821646, -1.0],
                 [-0.98728909, -0.04330416, 0.15292157, 1.0],
                 [ 0, 0, 0, 1]
             ]
@@ -123,16 +123,21 @@ class NodeProportionalControlFromFaceCoordinates:
         """
         Execute main control loop for Baxter's right arm.
         """
+        self.current_position_vector = np.array([0, 0, 0]).reshape((3, 1))
         while not rospy.is_shutdown():
-            self.move_baxter_based_on_transformation_matrix()
-            self.rate.sleep()
+            if (self.current_position_vector[0] != 0):
+                print("Face detected")
+                self.move_baxter_based_on_transformation_matrix()
+                # self.rate.sleep()
+            else:
+                print("Face NOT detected")
 
 
 def main():
     print("Initializing node... ")
     rospy.init_node('proportional_control')
 
-    main_node_proportional_control = NodeProportionalControlFromFaceCoordinates(20)
+    main_node_proportional_control = NodeProportionalControlFromFaceCoordinates(100)
 
     main_node_proportional_control.execute_control()
 

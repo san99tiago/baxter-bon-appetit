@@ -27,8 +27,10 @@ class BaxterCameraToolToFace:
 
     def __init__(self, face_detection_dict, z_offset):
         # Ratios for X/Z and Y/Z in meters (experimental factor from camera)
-        self.ratio_planar_x_z = 0.8
-        self.ratio_planar_y_z = 0.9
+
+        self.ratio_planar_x_z = 0.81
+        self.ratio_planar_y_z = 1.2
+
 
         self.z_offset = z_offset
 

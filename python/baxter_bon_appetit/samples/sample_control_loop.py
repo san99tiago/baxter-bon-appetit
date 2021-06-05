@@ -155,7 +155,8 @@ def test_2_mpc_first_attempt(show_results=True):
     N = 1  # Prediction horizon
 
     # Initial conditions for states and inputs
-    x0 = np.array([0.8, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]).reshape(7, 1)
+    x0 = np.array(
+        [0.2274126518040126, -1.0745535419137324, 0.04908738521233324, 2.5939615123142348, -0.09165535207615347, -1.543951663006669, 0.0038349519697135344]).reshape(7, 1)
     u0 = np.array([0, 0, 0, 0, 0, 0, 0]).reshape(7, 1)
 
     # Number of states and inputs
@@ -164,7 +165,14 @@ def test_2_mpc_first_attempt(show_results=True):
 
     # Desired cartesian goal [x_g, y_g, z_g, x_angle_g, y_angle_g, z_angle_g]
     cartesian_goal = np.array(
-        [-0.5, -0.8, 1.0, 2.5, -0.3, -0.2] * N).reshape(6, N)
+        [
+            -0.7392,
+            -0.8784,
+            1.1782,
+            0.6922224701627097,
+            1.535770179131032,
+            -1.3020356461623313
+        ] * N).reshape(6, N)
 
     # ---------- Main Control loop -------------
     # Variables for control loop
@@ -196,9 +204,9 @@ def test_2_mpc_first_attempt(show_results=True):
             # Apply MPC prediction
             mpc = b_mpc.MpcController(N, True, True)
             cartesian_goal = cartesian_goal + np.array(
-                [0.005 * np.sin(iteration/5),
-                 0.005 * np.sin(iteration/5),
-                 0.005 * np.sin(iteration/5),
+                [0.0 * np.sin(iteration/5),
+                 0.0 * np.sin(iteration/5),
+                 0.0 * np.sin(iteration/5),
                  0,
                  0,
                  0]
