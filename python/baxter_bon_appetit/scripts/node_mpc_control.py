@@ -196,7 +196,7 @@ class MpcControl:
 def main():
     print("Initializing node... ")
     rospy.init_node('mpc_control')
-    main_node_mpc = MpcContol(0.001)
+    main_node_mpc = MpcControl(0.001)
     main_node_mpc.execute_mpc_control()
     return 0
 
