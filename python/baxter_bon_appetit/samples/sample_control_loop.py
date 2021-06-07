@@ -261,6 +261,5 @@ def test_2_mpc_first_attempt(show_results=True):
 
 
 if __name__ == '__main__':
-    DEBUG_ = True
     # test_1_open_loop(True)
     test_2_mpc_first_attempt(False)

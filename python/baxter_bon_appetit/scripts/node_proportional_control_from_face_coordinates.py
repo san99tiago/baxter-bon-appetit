@@ -29,15 +29,12 @@ class NodeProportionalControlFromFaceCoordinates:
         self.define_rotation_matrix()
         self.rate = rospy.Rate(rospy_rate)
 
-        # TODO: Change this matrix to a constant value as "home" in BaxterClass
-        self.tm_w0_tool = np.array(
-            [
-                [-0.04483493, 0.99897278, -0.00657433, -0.4],
-                [-0.15247979, -0.01334699, -0.98821646, -1.0],
-                [-0.98728909, -0.04330416, 0.15292157, 1.0],
-                [ 0, 0, 0, 1]
-            ]
-        )
+        # Initial right limb matrix as "default" value
+        self.tm_w0_tool = bc.BaxterClass().TM_right_limb_home
+
+        # Initial current_position_vector as "default" value
+        self.current_position_vector = np.array([0, 0, 0]).reshape((3, 1))
+
 
         _face_coordinates_sub = rospy.Subscriber(
             'user/face_coordinates',
@@ -123,7 +120,6 @@ class NodeProportionalControlFromFaceCoordinates:
         """
         Execute main control loop for Baxter's right arm.
         """
-        self.current_position_vector = np.array([0, 0, 0]).reshape((3, 1))
         while not rospy.is_shutdown():
             if (self.current_position_vector[0] != 0):
                 print("Face detected")

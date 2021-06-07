@@ -12,6 +12,10 @@ import rospy
 import baxter_interface
 
 class NodeGoToHome:
+    """
+    ROS Node that enables the startup of Baxter robot, so that it can move to
+    the initial "home" position for both of its limbs.
+    """
     def __init__(self):
 
         # TODO: create FEM topic on another node and subscribe to it from here
@@ -37,6 +41,9 @@ class NodeGoToHome:
         limb.move_to_joint_positions(joint_command)
 
     def go_to_home(self):
+        """
+        Method to move each limb to the desired home position.
+        """
         # Move left limb to the home position
         tm_w0_tool = bc.BaxterClass().TM_left_limb_camera
         limb = "left"
