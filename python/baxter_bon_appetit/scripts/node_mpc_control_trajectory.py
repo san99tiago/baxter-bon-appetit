@@ -33,6 +33,8 @@ class MpcControl:
     """
 
     def __init__(self, sample_time):
+        self.define_rotation_matrix()
+
         # Prediction horizon
         self.N = 1
 
@@ -78,6 +80,22 @@ class MpcControl:
             JointCommand,
             queue_size=1)
 
+    def define_rotation_matrix(self):
+        """
+        This method defines a constant attribute for the right limb correct 
+        orientation in the feeding process. This matrix was found by empiric 
+        experiments with Baxter (it will be used when the MPC convex_opt 
+        algorithms do not find an optimal numerical solution).
+        """
+        self.ROTATION_MATRIX = np.array(
+            [
+                [0.00929883, 0.91156788, -0.41104445],
+                [-0.03376183, -0.41054165, -0.9112166],
+                [-0.99938665, 0.02235086, 0.02695865],
+                [0, 0, 0, 1]
+            ]
+        )
+
     def update_coordinates_callback(self, geometry_pose):
         """
         Recieve the callback function from the currect node that publishes the 
@@ -92,11 +110,41 @@ class MpcControl:
             [
                 geometry_pose.position.x,
                 geometry_pose.position.y,
-                geometry_pose.position.y,
+                geometry_pose.position.z,
                 0.6922224701627097,
                 1.535770179131032,
                 -1.3020356461623313
             ] * self.N).reshape(6, self.N)
+
+        # We calculate the complete TM matrix (for proportional control if the
+        # ... MPC optimal solution fails):
+        self.tm_w0_tool = self.create_tm_structure_from_pose_and_rotation()
+        print(self.tm_w0_tool)
+
+    def get_joint_values_from_baxter_transformation_matrix(self):
+        """
+        Get Baxter's right limb joint values based on a complete transformation 
+        matrix (in order to publish).
+        """
+        # Get current joint values from Baxter right limb
+        b1 = bc.BaxterClass()
+        return b1.ipk(self.tm_w0_tool, 'right', 'up')
+
+    def create_tm_structure_from_pose_and_rotation(self):
+        """
+        Create a Homogeneous Transformation Matrix from a rotation matrix and 
+        a position vector.
+        :returns: transformation matrix numpy array of size (4x4).
+        """
+        # Create a matrix (3x4) from rotation matrix and position vector
+        tm_top_part = np.concatenate(
+            [self.ROTATION_MATRIX, self.cartesian_goal[0:3]], 1
+        )
+
+        # Add the lower part array to the transformation matrix
+        lower_part_array = np.array([[0, 0, 0, 1]])
+
+        return np.concatenate([tm_top_part, lower_part_array], 0)
 
     def execute_mpc_control(self, show_results=True):
         """
@@ -144,11 +192,18 @@ class MpcControl:
                     # Prediction Horizon for 1 iteration at a time
                     u_k = u[:, 0].reshape((nu, 1))
 
+                    # Calculate new states based on StateSpace representation
+                    self.x_k_plus_1 = x_k + u_k
+
                 except Exception as e:
                     print("***** There was no optimal solution *****")
-
-                # Calculate new states based on StateSpace representation
-                self.x_k_plus_1 = x_k + u_k
+                    print("***** Applying Proportional Control *****")
+                    # Get joint values from desired Baxter's TM based on an IPK
+                    # approach and create the variable that will be published
+                    # on the "user/joint_control_values" topic
+                    joint_values = self.get_joint_values_from_baxter_transformation_matrix()
+                    joint_values = np.array(joint_values).reshape(7, 1)
+                    self.x_k_plus_1 = joint_values
 
                 # Publish "/user/joint_control_values" topic
                 self.publish_joint_commands()
