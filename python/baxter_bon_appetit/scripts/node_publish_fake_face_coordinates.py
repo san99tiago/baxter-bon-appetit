@@ -40,9 +40,9 @@ class NodePublishFaceCoordinates:
 
         self.current_coordinates = np.array(
             [
-                sys.argv[0],
-                sys.argv[1],
-                sys.argv[2]
+                float(sys.argv[1]),
+                float(sys.argv[2]),
+                float(sys.argv[3])
             ]
         ).reshape((3, 1))
 
@@ -53,9 +53,9 @@ class NodePublishFaceCoordinates:
 
             # Create Pose message based on "geometry_msgs"
             p = Pose()
-            p.position.x = coordinates[1]
-            p.position.y = coordinates[2]
-            p.position.z = coordinates[3]
+            p.position.x = coordinates[0]
+            p.position.y = coordinates[1]
+            p.position.z = coordinates[2]
 
             # Make sure the quaternion is valid and normalized
             p.orientation.x = 0.0
