@@ -4,6 +4,7 @@
 import time
 import sys
 import numpy as np
+import socket
 
 # Own imports
 import face_detect_hc as fdhc
@@ -11,6 +12,7 @@ import baxter_vision_mapping.baxter_camera_complete_transform as bcp
 
 # General module imports
 import rospy
+import rosgraph
 import cv2 as cv
 import cv_bridge
 
@@ -23,6 +25,10 @@ from sensor_msgs.msg import (
 
 from geometry_msgs.msg import (
     Pose
+)
+
+from baxter_core_msgs.srv import (
+    ListCameras,
 )
 
 
@@ -41,7 +47,7 @@ class NodePublishFaceCoordinates:
         self.rate = rospy.Rate(rospy_rate)
 
         self.validate_camera_resolution()
-        self.close_all_cameras()
+        self.show_open_publishing_cameras()
         self.open_camera()
 
         _image_sub = rospy.Subscriber(
@@ -62,27 +68,35 @@ class NodePublishFaceCoordinates:
             rospy.logerr('ERROR: Invalid resolution provided.')
             print("ERROR: Invalid resolution provided.")
 
-    def close_all_cameras(self):
+    def show_open_publishing_cameras(self):
         """
         Create the objects necessary to close all Baxter cameras in order to 
-        only open the desired one in the <open_camera> method.
+        only open the left limb one. This method ensures that the other cameras 
+        are closed before opening the left camera.
+        Remark: we got inspired from the original "baxter_tools" scripts.
         """
-        print("Closing all cameras...")
-        # cam = CameraController("head_camera")
-        # cam.close()
-        # cam = CameraController("right_hand_camera")
-        # cam.close()
-        # cam = CameraController("left_hand_camera")
-        # cam.close()
-
-    def open_camera(self):
-        """
-        Open only the desired camera, based on the baxter_camera_name attribute.
-        """
-        print("Opening {} ...".format(self.baxter_camera_name))
-        cam = CameraController(self.baxter_camera_name)
-        cam.resolution = self.camera_resolution
-        cam.open()
+        ls = rospy.ServiceProxy('cameras/list', ListCameras)
+        rospy.wait_for_service('cameras/list', timeout=10)
+        resp = ls()
+        if len(resp.cameras):
+            # Find open (publishing) cameras
+            master = rosgraph.Master('/rostopic')
+            resp.cameras
+            cam_topics = dict([(cam, "/cameras/%s/image" % cam)
+                                for cam in resp.cameras])
+            open_cams = dict([(cam, False) for cam in resp.cameras])
+            try:
+                topics = master.getPublishedTopics('')
+                for topic in topics:
+                    for cam in resp.cameras:
+                        if topic[0] == cam_topics[cam]:
+                            open_cams[cam] = True
+            except socket.error:
+                raise ROSTopicIOException("Cannot communicate with master.")
+            for cam in resp.cameras:
+                print("%s%s" % (cam, ("  -  (open)" if open_cams[cam] else "")))
+        else:
+            print ('No cameras found')
 
     def limb_cam_process_image_callback(self, ros_img):
         """
@@ -149,7 +163,7 @@ def main():
 
     main_node_face_coordinates.execute_publish_coordinates()
 
-    rospy.on_shutdown(main_node_face_coordinates.close_all_cameras)
+    rospy.on_shutdown(main_node_face_coordinates.show_open_publishing_cameras)
 
     cv.destroyAllWindows()
     return 0
