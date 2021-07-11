@@ -15,6 +15,10 @@ from geometry_msgs.msg import (
     Pose
 )
 
+from std_msgs.msg import (
+    String
+)
+
 
 class NodeProportionalControlFromFaceCoordinates:
     """
@@ -35,6 +39,13 @@ class NodeProportionalControlFromFaceCoordinates:
         # Initial current_position_vector as "default" value
         self.current_position_vector = np.array([0, 0, 0]).reshape((3, 1))
 
+        _fsm_sub = rospy.Subscriber(
+            'user/fsm',
+            String,
+            self.update_fsm_callback,
+            queue_size=1
+        )
+        self.state = "stop"
 
         _face_coordinates_sub = rospy.Subscriber(
             'user/face_coordinates',
@@ -42,6 +53,17 @@ class NodeProportionalControlFromFaceCoordinates:
             self.update_coordinates_callback,
             queue_size=1
         )
+
+    def update_fsm_callback(self, std_string):
+        """
+        Recieve the callback function from the current node that publishes the 
+        fsm as a "String" std_msgs. This enables the node to keep updating the 
+        Finite State Machine values for executing the "open_loop_control".
+        :param geometry_pose: current fsm message with a standard 
+            "String" format from "std_msgs.msg". 
+        """
+        self.state = std_string.data
+        print(self.state)
 
     def define_rotation_matrix(self):
         """
@@ -121,12 +143,13 @@ class NodeProportionalControlFromFaceCoordinates:
         Execute main control loop for Baxter's right arm.
         """
         while not rospy.is_shutdown():
-            if (self.current_position_vector[0] != 0):
-                print("Face detected")
-                self.move_baxter_based_on_transformation_matrix()
-                # self.rate.sleep()
-            else:
-                print("Face NOT detected")
+            if (self.state == "open_loop"):
+                if (self.current_position_vector[0] != 0):
+                    print("Face detected")
+                    self.move_baxter_based_on_transformation_matrix()
+                    # self.rate.sleep()
+                else:
+                    print("Face NOT detected")
 
 
 def main():

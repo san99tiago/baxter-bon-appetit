@@ -22,6 +22,10 @@ from baxter_core_msgs.msg import (
     JointCommand
 )
 
+from std_msgs.msg import (
+    String
+)
+
 
 class MpcControl:
     """
@@ -68,6 +72,14 @@ class MpcControl:
                 -1.3020356461623313
             ] * self.N).reshape(6, self.N)
 
+        _fsm_sub = rospy.Subscriber(
+            'user/fsm',
+            String,
+            self.update_fsm_callback,
+            queue_size=1
+        )
+        self.state = "stop"
+
         _face_coordinates_sub = rospy.Subscriber(
             'user/face_coordinates',
             Pose,
@@ -79,6 +91,17 @@ class MpcControl:
             'user/joint_control_values',
             JointCommand,
             queue_size=1)
+
+    def update_fsm_callback(self, std_string):
+        """
+        Recieve the callback function from the current node that publishes the 
+        fsm as a "String" std_msgs. This enables the node to keep updating the 
+        Finite State Machine values for executing the "mpc_control".
+        :param geometry_pose: current fsm message with a standard 
+            "String" format from "std_msgs.msg". 
+        """
+        self.state = std_string.data
+        print(self.state)
 
     def define_rotation_matrix(self):
         """

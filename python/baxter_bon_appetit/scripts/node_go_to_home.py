@@ -23,7 +23,7 @@ class NodeGoToHome:
     """
 
     def __init__(self):
-        _face_coordinates_sub = rospy.Subscriber(
+        _fsm_sub = rospy.Subscriber(
             'user/fsm',
             String,
             self.update_fsm_callback,
