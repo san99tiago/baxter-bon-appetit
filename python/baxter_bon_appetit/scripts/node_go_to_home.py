@@ -29,7 +29,7 @@ class NodeGoToHome:
             self.update_fsm_callback,
             queue_size=1
         )
-
+        self.state = "stop"
         self.go_to_home()
 
     def update_fsm_callback(self, std_string):
@@ -40,7 +40,7 @@ class NodeGoToHome:
         :param geometry_pose: current fsm message with a standard 
             "String" format from "std_msgs.msg". 
         """
-        self.state = std_string
+        self.state = std_string.data
         print(self.state)
 
     def move_baxter_based_on_transformation_matrix(self, tm_w0_tool, limb_to_move):
@@ -59,7 +59,7 @@ class NodeGoToHome:
         joints_values = b1.ipk(tm_w0_tool, limb_to_move, 'up')
         joint_command = dict(zip(limb_names, joints_values))
         print(joint_command)
-        limb.move_to_joint_positions(joint_command)
+        limb.set_to_joint_positions(joint_command)
 
     def go_to_home(self):
         """
@@ -78,6 +78,9 @@ class NodeGoToHome:
                 tm_w0_tool = bc.BaxterClass().TM_right_limb_home
                 limb = "right"
                 self.move_baxter_based_on_transformation_matrix(tm_w0_tool, limb)
+
+                # Alway set the state to "stop", after executing the movements
+                self.state = "stop"
 
 
 def main():

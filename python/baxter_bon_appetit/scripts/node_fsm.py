@@ -33,7 +33,8 @@ class NodeFiniteStateMachine:
         :param state: flag that defines the desired state.
             For example, "go_to_home", "get_food", "mpc", "open_loop", "stop".
         """
-        self._pub_face_coordinates.publish(state)
+        while not rospy.is_shutdown():
+            self._pub_face_coordinates.publish(state)
 
 
 def main():
