@@ -59,7 +59,7 @@ class NodeProportionalControlFromFaceCoordinates:
 
     def update_coordinates_callback(self, geometry_pose):
         """
-        Recieve the callback function from the currect node that publishes the 
+        Recieve the callback function from the current node that publishes the 
         face_coordinates as a "Pose" geometry_message. This callback calls the 
         necessary methods to apply the proportional-control algorithms based 
         on BaxterInterface class.

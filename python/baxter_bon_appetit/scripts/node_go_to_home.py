@@ -11,16 +11,37 @@ import numpy as np
 import rospy
 import baxter_interface
 
+from std_msgs.msg import (
+    String
+)
+
+
 class NodeGoToHome:
     """
     ROS Node that enables the startup of Baxter robot, so that it can move to
     the initial "home" position for both of its limbs.
     """
-    def __init__(self):
 
-        # TODO: create FEM topic on another node and subscribe to it from here
+    def __init__(self):
+        _face_coordinates_sub = rospy.Subscriber(
+            'user/fsm',
+            String,
+            self.update_fsm_callback,
+            queue_size=1
+        )
 
         self.go_to_home()
+
+    def update_fsm_callback(self, std_string):
+        """
+        Recieve the callback function from the current node that publishes the 
+        fsm as a "String" std_msgs. This enables the node to keep updating the 
+        Finite State Machine values for executing the "go_to_home" movements.
+        :param geometry_pose: current fsm message with a standard 
+            "String" format from "std_msgs.msg". 
+        """
+        self.state = std_string
+        print(self.state)
 
     def move_baxter_based_on_transformation_matrix(self, tm_w0_tool, limb_to_move):
         """
@@ -42,17 +63,21 @@ class NodeGoToHome:
 
     def go_to_home(self):
         """
-        Method to move each limb to the desired home position.
+        Method to move each limb to the desired home position based on the 
+        current state given by the FSM (self.state) value.
         """
-        # Move left limb to the home position
-        tm_w0_tool = bc.BaxterClass().TM_left_limb_camera
-        limb = "left"
-        self.move_baxter_based_on_transformation_matrix(tm_w0_tool, limb)
+        while not rospy.is_shutdown():
+            if (self.state == "go_to_home"):
+                print("Executing <go_to_home> movements")
+                # Move left limb to the home position
+                tm_w0_tool = bc.BaxterClass().TM_left_limb_camera
+                limb = "left"
+                self.move_baxter_based_on_transformation_matrix(tm_w0_tool, limb)
 
-        # Move right limb to the home position
-        tm_w0_tool = bc.BaxterClass().TM_right_limb_home
-        limb = "right"
-        self.move_baxter_based_on_transformation_matrix(tm_w0_tool, limb)
+                # Move right limb to the home position
+                tm_w0_tool = bc.BaxterClass().TM_right_limb_home
+                limb = "right"
+                self.move_baxter_based_on_transformation_matrix(tm_w0_tool, limb)
 
 
 def main():
