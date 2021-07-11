@@ -59,7 +59,7 @@ class NodeGoToHome:
         joints_values = b1.ipk(tm_w0_tool, limb_to_move, 'up')
         joint_command = dict(zip(limb_names, joints_values))
         print(joint_command)
-        limb.set_to_joint_positions(joint_command)
+        limb.set_joint_positions(joint_command)
 
     def go_to_home(self):
         """
