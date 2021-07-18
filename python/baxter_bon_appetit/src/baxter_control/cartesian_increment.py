@@ -10,7 +10,7 @@ import numpy as np
 class CartesianIncrements():
     """
     Class to calculate cartesian position and orientation increments for Baxter 
-    Model Predictive Controller structure.
+    Control Algorithms (OpenLoop, MPC, etc).
     :param cartesian_goal: column vector of the cartesian goal with the user's 
         mouth with the structure: 
         [x_g, y_g, z_g, x_angle_g, y_angle_g, z_angle_g]' .
