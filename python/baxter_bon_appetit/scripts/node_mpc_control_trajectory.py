@@ -8,6 +8,7 @@ import time
 import baxter_essentials.baxter_class as bc
 import baxter_essentials.transformation as transf
 import baxter_control.mpc_controller as b_mpc
+import baxter_control.cartesian_increment as c_inc
 
 # General module imports
 import numpy as np
@@ -16,6 +17,10 @@ import baxter_interface
 
 from geometry_msgs.msg import (
     Pose
+)
+
+from sensor_msgs.msg import (
+    JointState
 )
 
 from baxter_core_msgs.msg import (
@@ -48,13 +53,13 @@ class MpcControl:
         # Initial conditions for states and inputs
         self.x0 = np.array(
             [
-                0.2274126518040126,
-                -1.0745535419137324,
-                0.04908738521233324,
-                2.5939615123142348,
-                -0.09165535207615347,
-                -1.543951663006669,
-                0.0038349519697135344
+                -0.14493714941603725,
+                -1.7083615826393808,
+                0,
+                2.3368707926867396,
+                -2.997540542622311,
+                0.6536777483258095,
+                3.0818412019423946
             ]
         ).reshape(7, 1)
 
@@ -67,10 +72,17 @@ class MpcControl:
                 0,
                 0,
                 0,
-                0.6922224701627097,
-                1.535770179131032,
-                -1.3020356461623313
+                1.2301026595228144,
+                1.51069283378426,
+                -1.3578861321401596
             ] * self.N).reshape(6, self.N)
+
+        _joint_states_sub = rospy.Subscriber(
+            '/robot/joint_states',
+            JointState,
+            self.joint_states_callback,
+            queue_size=1
+        )
 
         _fsm_sub = rospy.Subscriber(
             'user/fsm',
@@ -92,6 +104,32 @@ class MpcControl:
             JointCommand,
             queue_size=1)
 
+    def joint_states_callback(self, event):
+        """
+        Callback to get current joint_states angles for Baxter robot.
+        """
+        baxter_angles = event.position
+        self.joint_states = {
+            'right': [
+                baxter_angles[11],
+                baxter_angles[12],
+                baxter_angles[9],
+                baxter_angles[10],
+                baxter_angles[13],
+                baxter_angles[14],
+                baxter_angles[15]
+            ],
+            'left': [
+                baxter_angles[4],
+                baxter_angles[5],
+                baxter_angles[2],
+                baxter_angles[3],
+                baxter_angles[6],
+                baxter_angles[7],
+                baxter_angles[8]
+            ]
+        }
+
     def update_fsm_callback(self, std_string):
         """
         Recieve the callback function from the current node that publishes the 
@@ -112,10 +150,9 @@ class MpcControl:
         """
         self.ROTATION_MATRIX = np.array(
             [
-                [0.00929883, 0.91156788, -0.41104445],
-                [-0.03376183, -0.41054165, -0.9112166],
-                [-0.99938665, 0.02235086, 0.02695865],
-                [0, 0, 0, 1]
+                [ 0.01269254, 0.5253967, -0.85076272],
+                [-0.058711, -0.84897177, -0.52516659],
+                [-0.99819433, 0.05661483, 0.02007095]
             ]
         )
 
@@ -134,10 +171,23 @@ class MpcControl:
                 geometry_pose.position.x,
                 geometry_pose.position.y,
                 geometry_pose.position.z,
-                0.6922224701627097,
-                1.535770179131032,
-                -1.3020356461623313
+                1.2301026595228144,
+                1.51069283378426,
+                -1.3578861321401596
             ] * self.N).reshape(6, self.N)
+
+        # Get current Baxter right limb cartesian positions
+        b1 = bc.BaxterClass()
+        cartesian_current = b1.fpk(self.joint_states["right"], "right", 7)[:3, 3:4]
+
+        # Add extra zeros (for cartesian orientation)
+        open_loop_cartesian_goal = self.cartesian_goal
+        cartesian_current = np.concatenate(
+            [cartesian_current, np.array([0, 0, 0]).reshape(3, 1)])
+
+        c1 = c_inc.CartesianIncrements(open_loop_cartesian_goal, cartesian_current)
+        self.current_position_vector = cartesian_current + \
+            c1.calculate_cartesian_increment()
 
         # We calculate the complete TM matrix (for proportional control if the
         # ... MPC optimal solution fails):
@@ -161,7 +211,7 @@ class MpcControl:
         """
         # Create a matrix (3x4) from rotation matrix and position vector
         tm_top_part = np.concatenate(
-            [self.ROTATION_MATRIX, self.cartesian_goal[0:3]], 1
+            [self.ROTATION_MATRIX, self.current_position_vector[:3]], 1
         )
 
         # Add the lower part array to the transformation matrix
@@ -205,8 +255,7 @@ class MpcControl:
                     mpc = b_mpc.MpcController(self.N, True, True)
 
                     # Read current Baxter right limb joint values
-                    x_k_dict = baxter_interface.Limb("right").joint_angles()
-                    x_k = list(x_k_dict.values())
+                    x_k = self.joint_states["right"]
                     x_k = np.array(x_k).reshape(7, 1)
 
                     dict_results = mpc.execute_mpc(self.cartesian_goal, x_k)
