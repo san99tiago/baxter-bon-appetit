@@ -40,7 +40,7 @@ class MpcController:
             [
                 math.radians(-141),
                 math.radians(-123),
-                math.radians(-173),
+                math.radians(-30),
                 math.radians(-3),
                 math.radians(-175),
                 math.radians(-90),
@@ -52,7 +52,7 @@ class MpcController:
             [
                 math.radians(51),
                 math.radians(60),
-                math.radians(173),
+                math.radians(30),
                 math.radians(150),
                 math.radians(175),
                 math.radians(120),
