@@ -61,6 +61,21 @@ class NodeGoToHome:
         print(joint_command)
         limb.set_joint_positions(joint_command)
 
+    def move_baxter_based_on_joint_values(self, joint_values, limb_to_move):
+        """
+        Move Baxter's limb based on a each DOF joint values using
+        BaxterInterface class.
+        :param joint_values: Joint Values for desired Baxter position.
+        :param limb: selected Baxter arm.
+            example: "left", "right".
+        """
+
+        limb = baxter_interface.Limb(limb_to_move)
+        limb_names = limb.joint_names()
+        joint_command = dict(zip(limb_names, joint_values))
+        print(joint_command)
+        limb.set_joint_positions(joint_command)
+
     def go_to_home(self):
         """
         Method to move each limb to the desired home position based on the 
@@ -69,15 +84,15 @@ class NodeGoToHome:
         while not rospy.is_shutdown():
             if (self.state == "go_to_home"):
                 print("Executing <go_to_home> movements")
-                # Move left limb to the home position
+                # Move left limb to the home position based on TM
                 tm_w0_tool = bc.BaxterClass().TM_left_limb_camera
                 limb = "left"
                 self.move_baxter_based_on_transformation_matrix(tm_w0_tool, limb)
 
-                # Move right limb to the home position
-                tm_w0_tool = bc.BaxterClass().TM_right_limb_home
+                # Move right limb to the home position based on joint_values
+                joint_values = bc.BaxterClass().joint_values_right_limb_home
                 limb = "right"
-                self.move_baxter_based_on_transformation_matrix(tm_w0_tool, limb)
+                self.move_baxter_based_on_transformation_matrix(joint_values, limb)
 
                 # Alway set the state to "stop", after executing the movements
                 self.state = "stop"

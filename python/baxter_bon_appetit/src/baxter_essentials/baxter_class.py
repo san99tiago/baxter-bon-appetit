@@ -105,6 +105,16 @@ class BaxterClass():
             [ 0, 0, 0, 1]]
         )
 
+        self.joint_values_right_limb_home = [
+            0.39653403366837947,
+            -1.2843254146570626,
+            -0.18983012250081996,
+            2.5928110267233206,
+            -0.11236409271260656,
+            -1.3514370741270496,
+            0.11351457830352062
+        ]
+
     def fpk(self, joint_values, limb, ndof):
         """
         Forward Pose Kinematics for Baxter Robot.
