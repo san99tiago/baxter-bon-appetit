@@ -92,7 +92,7 @@ class NodeGoToHome:
                 # Move right limb to the home position based on joint_values
                 joint_values = bc.BaxterClass().joint_values_right_limb_home
                 limb = "right"
-                self.move_baxter_based_on_transformation_matrix(joint_values, limb)
+                self.move_baxter_based_on_joint_values(joint_values, limb)
 
                 # Alway set the state to "stop", after executing the movements
                 self.state = "stop"
