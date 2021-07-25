@@ -53,13 +53,13 @@ class MpcControl:
         # Initial conditions for states and inputs
         self.x0 = np.array(
             [
-                -0.14493714941603725,
-                -1.7083615826393808,
-                0,
-                2.3368707926867396,
-                -2.997540542622311,
-                0.6536777483258095,
-                3.0818412019423946
+                0.39500005288049406,
+                -1.2831749290661485,
+                -0.18867963690990588,
+                2.5905100555414924,
+                -0.11428156869746332,
+                -1.3506700837331067,
+                0.11504855909140603
             ]
         ).reshape(7, 1)
 
@@ -72,10 +72,11 @@ class MpcControl:
                 0,
                 0,
                 0,
-                1.2301026595228144,
-                1.51069283378426,
-                -1.3578861321401596
-            ] * self.N).reshape(6, self.N)
+                0.6660425877100662,
+                1.5192944057794895,
+                -1.3616725381467032
+            ] * self.N
+        ).reshape(6, self.N)
 
         _joint_states_sub = rospy.Subscriber(
             '/robot/joint_states',
@@ -171,10 +172,11 @@ class MpcControl:
                 geometry_pose.position.x,
                 geometry_pose.position.y,
                 geometry_pose.position.z,
-                1.2301026595228144,
-                1.51069283378426,
-                -1.3578861321401596
-            ] * self.N).reshape(6, self.N)
+                1.3486466410078362,
+                1.466247306243215,
+                -1.2373949601695735
+            ] * self.N
+        ).reshape(6, self.N)
 
         # Get current Baxter right limb cartesian positions
         b1 = bc.BaxterClass()
@@ -270,12 +272,12 @@ class MpcControl:
                 except Exception as e:
                     print("***** There was no optimal solution *****")
                     print("***** Applying Proportional Control *****")
-                    # Get joint values from desired Baxter's TM based on an IPK
-                    # approach and create the variable that will be published
-                    # on the "user/joint_control_values" topic
-                    joint_values = self.get_joint_values_from_baxter_transformation_matrix()
-                    joint_values = np.array(joint_values).reshape(7, 1)
-                    self.x_k_plus_1 = joint_values
+                    # # Get joint values from desired Baxter's TM based on an IPK
+                    # # approach and create the variable that will be published
+                    # # on the "user/joint_control_values" topic
+                    # joint_values = self.get_joint_values_from_baxter_transformation_matrix()
+                    # joint_values = np.array(joint_values).reshape(7, 1)
+                    # self.x_k_plus_1 = joint_values
 
                 # Publish "/user/joint_control_values" topic
                 self.publish_joint_commands()
