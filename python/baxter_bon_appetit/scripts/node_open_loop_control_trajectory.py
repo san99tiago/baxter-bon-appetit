@@ -5,16 +5,11 @@ import sys
 
 # Own imports
 import baxter_essentials.baxter_class as bc
-import baxter_control.cartesian_increment as c_inc
 
 # General module imports
 import numpy as np
 import rospy
 import baxter_interface
-
-from sensor_msgs.msg import (
-    JointState
-)
 
 from geometry_msgs.msg import (
     Pose
@@ -25,7 +20,7 @@ from std_msgs.msg import (
 )
 
 
-class NodeOpenLoopControlFromFaceCoordinates:
+class NodeProportionalControlFromFaceCoordinates:
     """
     ROS Node that subscribes to the face_coordinates publisher and enables the 
     baxter_interface control method to apply a proportional-control action 
@@ -44,13 +39,6 @@ class NodeOpenLoopControlFromFaceCoordinates:
         # Initial current_position_vector as "default" value
         self.current_position_vector = np.array([0, 0, 0]).reshape((3, 1))
 
-        _joint_states_sub = rospy.Subscriber(
-            '/robot/joint_states',
-            JointState,
-            self.joint_states_callback,
-            queue_size=1
-        )
-
         _fsm_sub = rospy.Subscriber(
             'user/fsm',
             String,
@@ -65,32 +53,6 @@ class NodeOpenLoopControlFromFaceCoordinates:
             self.update_coordinates_callback,
             queue_size=1
         )
-
-    def joint_states_callback(self, event):
-        """
-        Callback to get current joint_states angles for Baxter robot.
-        """
-        baxter_angles = event.position
-        self.joint_states = {
-            'right': [
-                baxter_angles[11],
-                baxter_angles[12],
-                baxter_angles[9],
-                baxter_angles[10],
-                baxter_angles[13],
-                baxter_angles[14],
-                baxter_angles[15]
-            ],
-            'left': [
-                baxter_angles[4],
-                baxter_angles[5],
-                baxter_angles[2],
-                baxter_angles[3],
-                baxter_angles[6],
-                baxter_angles[7],
-                baxter_angles[8]
-            ]
-        }
 
     def update_fsm_callback(self, std_string):
         """
@@ -126,28 +88,13 @@ class NodeOpenLoopControlFromFaceCoordinates:
         :param geometry_pose: current face_coordinates message with a standard 
             "Pose" format from "geometry_msgs.msg". 
         """
-        cartesian_goal = np.array(
+        self.current_position_vector = np.array(
             [
                 geometry_pose.position.x,
                 geometry_pose.position.y,
                 geometry_pose.position.z
             ]
         ).reshape((3, 1))
-
-        # Get current Baxter right limb cartesian positions
-        b1 = bc.BaxterClass()
-        cartesian_current = b1.fpk(self.joint_states["right"], "right", 7)[:3, 3:4]
-
-        # Add extra zeros (for cartesian orientation)
-        cartesian_goal = np.concatenate(
-            [cartesian_goal, np.array([0, 0, 0]).reshape(3, 1)])
-        cartesian_current = np.concatenate(
-            [cartesian_current, np.array([0, 0, 0]).reshape(3, 1)])
-
-        c1 = c_inc.CartesianIncrements(cartesian_goal, cartesian_current)
-        self.current_position_vector = cartesian_current + \
-            c1.calculate_cartesian_increment()
-
         self.tm_w0_tool = self.create_tm_structure_from_pose_and_rotation()
         print(self.tm_w0_tool)
 
@@ -159,7 +106,7 @@ class NodeOpenLoopControlFromFaceCoordinates:
         """
         # Create a matrix (3x4) from rotation matrix and position vector
         tm_top_part = np.concatenate(
-            [self.ROTATION_MATRIX, self.current_position_vector[:3]], 1
+            [self.ROTATION_MATRIX, self.current_position_vector], 1
         )
 
         # Add the lower part array to the transformation matrix
@@ -172,7 +119,7 @@ class NodeOpenLoopControlFromFaceCoordinates:
         Move Baxter's right limb based on a complete transformation matrix 
         using BaxterInterface class with a proportional control.
         """
-        # Get desired joint values from Baxter right limb
+        # Get current joint values from Baxter right limb
         b1 = bc.BaxterClass()
         joints_values = b1.ipk(self.tm_w0_tool, 'right', 'up')
 
@@ -183,6 +130,13 @@ class NodeOpenLoopControlFromFaceCoordinates:
         joint_command = dict(zip(right_limb_names, joints_values))
         print(joint_command)
         self.right_limb.set_joint_positions(joint_command)
+
+    def restore_right_limb_position(self):
+        """
+        Move Baxter's right limb to neutral position using BaxterInterface.
+        """
+        self.right_limb = baxter_interface.Limb('right')
+        self.right_limb.move_to_neutral()
 
     def execute_control(self):
         """
@@ -202,10 +156,12 @@ def main():
     print("Initializing node... ")
     rospy.init_node('proportional_control')
 
-    main_node_proportional_control = NodeOpenLoopControlFromFaceCoordinates(
-        100)
+    main_node_proportional_control = NodeProportionalControlFromFaceCoordinates(100)
 
     main_node_proportional_control.execute_control()
+
+    rospy.on_shutdown(
+        main_node_proportional_control.restore_right_limb_position)
 
     return 0
 
