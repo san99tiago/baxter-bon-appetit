@@ -79,8 +79,8 @@ class NodeSaveData:
             format from "sensor_msgs.msg". 
         """
         baxter_angles = joint_state.position
-        self.current_joint_states = {
-            'right': [
+        self.current_joint_states = np.array(
+            [
                 baxter_angles[11],
                 baxter_angles[12],
                 baxter_angles[9],
@@ -88,17 +88,7 @@ class NodeSaveData:
                 baxter_angles[13],
                 baxter_angles[14],
                 baxter_angles[15]
-            ],
-            'left': [
-                baxter_angles[4],
-                baxter_angles[5],
-                baxter_angles[2],
-                baxter_angles[3],
-                baxter_angles[6],
-                baxter_angles[7],
-                baxter_angles[8]
-            ]
-        }
+            ]).reshape(7, 1)
 
         if (self.show_results == True):
             print("joint_states_callback: ")
@@ -120,7 +110,7 @@ class NodeSaveData:
                 1.466247306243215,
                 -1.2373949601695735
             ]
-        ).reshape((3, 1))
+        ).reshape((6, 1))
 
         if (self.show_results == True):
             print("face_coordinates_callback: ")
@@ -261,7 +251,11 @@ class NodeSaveData:
         Current cartesian position and orientation calculations from the 
         current joint_states that are recieved from the callback.
         """
-        tm_current = bc.BaxterClass().fpk(self.current_joint_states, "right", 7)
+        tm_current = bc.BaxterClass().fpk(
+            self.current_joint_states,
+            "right",
+            7
+        )
         current_position = tm_current[0:3, 3]
         current_orientation = transf.Transformation(
             0, 0, 0, [0, 0, 0]).get_fixed_angles_from_tm(tm_current)
@@ -391,11 +385,11 @@ def main():
     rospy.init_node('save_data')
 
     # Acquire inputs for the params of the NodeSaveData class
-    if len(sys.argv < 5):
+    if len((sys.argv) < 5):
         print("Enter the arguments: sample_time, total_time, title, file_name")
         return 0
-    sample_time = sys.argv[1]
-    total_time = sys.argv[2]
+    sample_time = float(sys.argv[1])
+    total_time = float(sys.argv[2])
     title = sys.argv[3]
     file_name = sys.argv[4]
 
