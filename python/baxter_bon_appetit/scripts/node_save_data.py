@@ -109,8 +109,7 @@ class NodeSaveData:
                 1.3486466410078362,
                 1.466247306243215,
                 -1.2373949601695735
-            ]
-        ).reshape((6, 1))
+            ]).reshape((6, 1))
 
         if (self.show_results == True):
             print("face_coordinates_callback: ")
@@ -125,7 +124,8 @@ class NodeSaveData:
             "JointCommand" format from "baxter_core_msgs.msg". 
         """
         self.current_control_joint_names = joint_command.names
-        self.current_control_joint_values = joint_command.command
+        self.current_control_joint_values = np.array(
+            [joint_command.command]).reshape(7, 1)
 
         if (self.show_results == True):
             print("control_joint_values_callback: ")
@@ -385,7 +385,7 @@ def main():
     rospy.init_node('save_data')
 
     # Acquire inputs for the params of the NodeSaveData class
-    if len((sys.argv) < 5):
+    if (len(sys.argv) < 5):
         print("Enter the arguments: sample_time, total_time, title, file_name")
         return 0
     sample_time = float(sys.argv[1])
