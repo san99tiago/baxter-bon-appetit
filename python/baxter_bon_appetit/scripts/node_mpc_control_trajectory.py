@@ -102,7 +102,8 @@ class MpcControl:
         self._pub_joint_control_values = rospy.Publisher(
             'user/joint_control_values',
             JointCommand,
-            queue_size=1)
+            queue_size=1
+        )
 
     def joint_states_callback(self, event):
         """
@@ -258,7 +259,7 @@ class MpcControl:
                     print("***** Applying Proportional Control *****")
 
                 # Publish "/user/joint_control_values" topic
-                self.publish_joint_commands()
+                self.publish_control_joint_commands()
 
                 # ! Temporary control action to test MPC implementation ...
                 # ! will be replaced by control node
@@ -268,7 +269,7 @@ class MpcControl:
                 if (face_detected_condition == False):
                     print("Face NOT detected")
 
-    def publish_joint_commands(self):
+    def publish_control_joint_commands(self):
         """
         Publish 'JointCommand' topic with the desired joint-values for each of
         Baxter's right limb based on the MPC predictions.
