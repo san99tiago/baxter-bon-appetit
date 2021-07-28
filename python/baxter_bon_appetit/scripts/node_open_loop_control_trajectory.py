@@ -11,12 +11,16 @@ import numpy as np
 import rospy
 import baxter_interface
 
+from std_msgs.msg import (
+    String
+)
+
 from geometry_msgs.msg import (
     Pose
 )
 
-from std_msgs.msg import (
-    String
+from baxter_core_msgs.msg import (
+    JointCommand
 )
 
 
@@ -51,6 +55,12 @@ class NodeProportionalControlFromFaceCoordinates:
             'user/face_coordinates',
             Pose,
             self.update_coordinates_callback,
+            queue_size=1
+        )
+
+        self._pub_joint_control_values = rospy.Publisher(
+            'user/joint_control_values',
+            JointCommand,
             queue_size=1
         )
 
@@ -121,22 +131,15 @@ class NodeProportionalControlFromFaceCoordinates:
         """
         # Get current joint values from Baxter right limb
         b1 = bc.BaxterClass()
-        joints_values = b1.ipk(self.tm_w0_tool, 'right', 'up')
+        self.control_joints_values = b1.ipk(self.tm_w0_tool, 'right', 'up')
 
         # Create the baxter_inteface instance to work with Baxter's right limb
         self.right_limb = baxter_interface.Limb('right')
         right_limb_names = self.right_limb.joint_names()
 
-        joint_command = dict(zip(right_limb_names, joints_values))
+        joint_command = dict(zip(right_limb_names, self.control_joints_values))
         print(joint_command)
         self.right_limb.set_joint_positions(joint_command)
-
-    def restore_right_limb_position(self):
-        """
-        Move Baxter's right limb to neutral position using BaxterInterface.
-        """
-        self.right_limb = baxter_interface.Limb('right')
-        self.right_limb.move_to_neutral()
 
     def execute_control(self):
         """
@@ -151,17 +154,34 @@ class NodeProportionalControlFromFaceCoordinates:
                 else:
                     print("Face NOT detected")
 
+    def publish_control_joint_commands(self):
+        """
+        Publish 'JointCommand' topic with the desired joint-values for each of
+        Baxter's right limb based on the open loop control.
+        """
+        cmd = JointCommand()
+        cmd.mode = JointCommand.POSITION_MODE
+        cmd.names = [
+            "right_s0",
+            "right_s1",
+            "right_e0",
+            "right_e1",
+            "right_w0",
+            "right_w1",
+            "right_w2"
+        ]
+        cmd.command = self.control_joints_values
+        self._pub_joint_control_values.publish(cmd)
+
 
 def main():
     print("Initializing node... ")
-    rospy.init_node('proportional_control')
+    rospy.init_node('open_loop_control')
 
-    main_node_proportional_control = NodeProportionalControlFromFaceCoordinates(100)
+    main_node_proportional_control = NodeProportionalControlFromFaceCoordinates(
+        100)
 
     main_node_proportional_control.execute_control()
-
-    rospy.on_shutdown(
-        main_node_proportional_control.restore_right_limb_position)
 
     return 0
 
