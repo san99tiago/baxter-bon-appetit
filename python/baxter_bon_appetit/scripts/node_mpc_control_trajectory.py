@@ -42,7 +42,6 @@ class MpcControl:
     """
 
     def __init__(self, sample_time):
-        self.define_rotation_matrix()
 
         # Prediction horizon
         self.N = 1
@@ -141,21 +140,6 @@ class MpcControl:
         """
         self.state = std_string.data
         print(self.state)
-
-    def define_rotation_matrix(self):
-        """
-        This method defines a constant attribute for the right limb correct 
-        orientation in the feeding process. This matrix was found by empiric 
-        experiments with Baxter (it will be used when the MPC convex_opt 
-        algorithms do not find an optimal numerical solution).
-        """
-        self.ROTATION_MATRIX = np.array(
-            [
-                [ 0.01269254, 0.5253967, -0.85076272],
-                [-0.058711, -0.84897177, -0.52516659],
-                [-0.99819433, 0.05661483, 0.02007095]
-            ]
-        )
 
     def update_coordinates_callback(self, geometry_pose):
         """
@@ -272,12 +256,6 @@ class MpcControl:
                 except Exception as e:
                     print("***** There was no optimal solution *****")
                     print("***** Applying Proportional Control *****")
-                    # # Get joint values from desired Baxter's TM based on an IPK
-                    # # approach and create the variable that will be published
-                    # # on the "user/joint_control_values" topic
-                    # joint_values = self.get_joint_values_from_baxter_transformation_matrix()
-                    # joint_values = np.array(joint_values).reshape(7, 1)
-                    # self.x_k_plus_1 = joint_values
 
                 # Publish "/user/joint_control_values" topic
                 self.publish_joint_commands()
