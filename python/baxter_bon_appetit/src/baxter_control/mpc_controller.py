@@ -87,8 +87,9 @@ class MpcController:
 
         for t in range(self.N):
             # Calculate variables for the construction of the cost function
+
             cartesian_increment = self.calculate_cartesian_increment(
-                cartesian_goal, current_thetas)
+                cartesian_goal[:, t].reshape(6, 1), current_thetas)
             jacobian = self.calculate_jacobian(current_thetas)
 
             # Create cost function of:
