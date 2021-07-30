@@ -47,6 +47,7 @@ class NodeSaveData:
 
         # Desired filename for the output after processing the data
         self.file_name = file_name
+        self.current_date = datetime.datetime.now().strftime("%Y_%m_%d__%H_%M_")
 
         self.show_results = True
         self.save_data = True
@@ -270,8 +271,7 @@ class NodeSaveData:
         control_joint_efforts, the cartesian_current and the cartesian_goal.
         """
         # Create/Open the main file to save the Workspace information
-        current_date = datetime.datetime.now().strftime("%Y_%m_%d__%H_%M_")
-        file_name = current_date + self.file_name
+        file_name = self.current_date + self.file_name
         workspace_file = open(file_name, 'a')
 
         # Create readable output structure for the data:
