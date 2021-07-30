@@ -41,10 +41,10 @@ class MpcControl:
     :param sample_time: integer that defines the sample_time in seconds.
     """
 
-    def __init__(self, sample_time):
+    def __init__(self, sample_time, prediction_horizon=1):
 
         # Prediction horizon
-        self.N = 1
+        self.N = prediction_horizon
 
         # Control sample time in seconds
         self.sample_time = sample_time
@@ -68,14 +68,16 @@ class MpcControl:
         # Initial cartesian_goal "default" value
         self.cartesian_goal = np.array(
             [
-                0,
-                0,
-                0,
-                0.6660425877100662,
-                1.5192944057794895,
-                -1.3616725381467032
+                [
+                    0,
+                    0,
+                    0,
+                    0.6660425877100662,
+                    1.5192944057794895,
+                    -1.3616725381467032
+                ],
             ] * self.N
-        ).reshape(6, self.N)
+        ).transpose().reshape(6, self.N)
 
         _joint_states_sub = rospy.Subscriber(
             '/robot/joint_states',
@@ -154,25 +156,29 @@ class MpcControl:
         # Desired cartesian goal [x_g, y_g, z_g, x_angle_g, y_angle_g, z_angle_g]
         self.cartesian_goal = np.array(
             [
-                geometry_pose.position.x,
-                geometry_pose.position.y,
-                geometry_pose.position.z,
-                0.6660425877100662,
-                1.5192944057794895,
-                -1.3616725381467032
+                [
+                    geometry_pose.position.x,
+                    geometry_pose.position.y,
+                    geometry_pose.position.z,
+                    0.6660425877100662,
+                    1.5192944057794895,
+                    -1.3616725381467032
+                ],
             ] * self.N
-        ).reshape(6, self.N)
+        ).transpose().reshape(6, self.N)
 
         # Get current Baxter right limb cartesian positions
         b1 = bc.BaxterClass()
-        cartesian_current = b1.fpk(self.joint_states["right"], "right", 7)[:3, 3:4]
+        cartesian_current = b1.fpk(
+            self.joint_states["right"], "right", 7)[:3, 3:4]
 
         # Add extra zeros (for cartesian orientation)
         open_loop_cartesian_goal = self.cartesian_goal
         cartesian_current = np.concatenate(
             [cartesian_current, np.array([0, 0, 0]).reshape(3, 1)])
 
-        c1 = c_inc.CartesianIncrements(open_loop_cartesian_goal, cartesian_current)
+        c1 = c_inc.CartesianIncrements(
+            open_loop_cartesian_goal, cartesian_current)
         self.current_position_vector = cartesian_current + \
             c1.calculate_cartesian_increment()
 
@@ -229,8 +235,10 @@ class MpcControl:
             sample_time_condition = time.time() - last_time >= self.sample_time
             # Only proceed to control if the face was detected
             face_detected_condition = self.cartesian_goal[2] != 0
+            # Only proceed to control if the FSM is in "mpc" state
+            state_mpc_condition = "mpc" == self.state
 
-            if (sample_time_condition and face_detected_condition):
+            if (sample_time_condition and face_detected_condition and state_mpc_condition):
                 # Update time conditions and iterations
                 last_time = time.time()
                 if (show_results == True):
@@ -304,7 +312,11 @@ class MpcControl:
 def main():
     print("Initializing node... ")
     rospy.init_node('mpc_control')
-    main_node_mpc = MpcControl(0.001)
+
+    # Prediction horizon (input)
+    N = sys.argv[1]
+
+    main_node_mpc = MpcControl(0.001, N)
     main_node_mpc.execute_mpc_control()
     return 0
 
