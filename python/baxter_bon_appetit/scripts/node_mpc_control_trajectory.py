@@ -182,36 +182,6 @@ class MpcControl:
         self.current_position_vector = cartesian_current + \
             c1.calculate_cartesian_increment()
 
-        # We calculate the complete TM matrix (for proportional control if the
-        # ... MPC optimal solution fails):
-        self.tm_w0_tool = self.create_tm_structure_from_pose_and_rotation()
-        print(self.tm_w0_tool)
-
-    def get_joint_values_from_baxter_transformation_matrix(self):
-        """
-        Get Baxter's right limb joint values based on a complete transformation 
-        matrix (in order to publish).
-        """
-        # Get current joint values from Baxter right limb
-        b1 = bc.BaxterClass()
-        return b1.ipk(self.tm_w0_tool, 'right', 'up')
-
-    def create_tm_structure_from_pose_and_rotation(self):
-        """
-        Create a Homogeneous Transformation Matrix from a rotation matrix and 
-        a position vector.
-        :returns: transformation matrix numpy array of size (4x4).
-        """
-        # Create a matrix (3x4) from rotation matrix and position vector
-        tm_top_part = np.concatenate(
-            [self.ROTATION_MATRIX, self.current_position_vector[:3]], 1
-        )
-
-        # Add the lower part array to the transformation matrix
-        lower_part_array = np.array([[0, 0, 0, 1]])
-
-        return np.concatenate([tm_top_part, lower_part_array], 0)
-
     def execute_mpc_control(self, show_results=True):
         """
         Main control loop to execute MPC controller based on the TM of the
