@@ -2,6 +2,7 @@
 
 # Built-int imports
 import time
+import sys
 
 # General module imports
 import rospy
@@ -81,3 +82,17 @@ class NodeJointPositionControl:
         # Create the baxter_inteface instance to work with Baxter's right limb
         self.right_limb = baxter_interface.Limb('right')
         self.right_limb.set_joint_positions(joint_command)
+
+
+def main():
+    print("Initializing node... ")
+    rospy.init_node('joint_position_control')
+
+    main_node_joint_position_control = NodeJointPositionControl(0.001)
+    main_node_joint_position_control.execute_control()
+
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

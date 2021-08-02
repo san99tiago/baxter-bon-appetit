@@ -297,7 +297,7 @@ def main():
     rospy.init_node('mpc_control')
 
     # Prediction horizon (input)
-    N = sys.argv[1]
+    N = int(sys.argv[1])
 
     main_node_mpc = MpcControl(0.001, N)
     main_node_mpc.execute_mpc_control()
