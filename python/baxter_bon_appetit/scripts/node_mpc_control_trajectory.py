@@ -41,7 +41,7 @@ class MpcControl:
     :param sample_time: integer that defines the sample_time in seconds.
     """
 
-    def __init__(self, sample_time, prediction_horizon=1):
+    def __init__(self, sample_time=0.01, prediction_horizon=1):
 
         # Prediction horizon
         self.N = prediction_horizon
@@ -61,6 +61,12 @@ class MpcControl:
                 0.11504855909140603
             ]
         ).reshape(7, 1)
+
+        self.joint_states = {
+            "right": [
+                self.x0
+            ]
+        }
 
         # Initial conditions for inputs (delta joint values)
         self.u0 = np.array([0, 0, 0, 0, 0, 0, 0]).reshape(7, 1)
@@ -166,21 +172,6 @@ class MpcControl:
                 ],
             ] * self.N
         ).transpose().reshape(6, self.N)
-
-        # Get current Baxter right limb cartesian positions
-        b1 = bc.BaxterClass()
-        cartesian_current = b1.fpk(
-            self.joint_states["right"], "right", 7)[:3, 3:4]
-
-        # Add extra zeros (for cartesian orientation)
-        open_loop_cartesian_goal = self.cartesian_goal
-        cartesian_current = np.concatenate(
-            [cartesian_current, np.array([0, 0, 0]).reshape(3, 1)])
-
-        c1 = c_inc.CartesianIncrements(
-            open_loop_cartesian_goal, cartesian_current)
-        self.current_position_vector = cartesian_current + \
-            c1.calculate_cartesian_increment()
 
     def execute_mpc_control(self, show_results=True):
         """
