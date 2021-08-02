@@ -83,20 +83,45 @@ class NodePublishFaceCoordinates:
             master = rosgraph.Master('/rostopic')
             resp.cameras
             cam_topics = dict([(cam, "/cameras/%s/image" % cam)
-                                for cam in resp.cameras])
-            open_cams = dict([(cam, False) for cam in resp.cameras])
+                               for cam in resp.cameras])
+            self.open_cams = dict([(cam, False) for cam in resp.cameras])
             try:
                 topics = master.getPublishedTopics('')
                 for topic in topics:
                     for cam in resp.cameras:
                         if topic[0] == cam_topics[cam]:
-                            open_cams[cam] = True
+                            self.open_cams[cam] = True
             except socket.error:
                 raise ROSTopicIOException("Cannot communicate with master.")
             for cam in resp.cameras:
-                print("%s%s" % (cam, ("  -  (open)" if open_cams[cam] else "")))
+                print("%s%s" %
+                      (cam, ("  -  (open)" if self.open_cams[cam] else "")))
+
+            print(self.open_cams)
         else:
-            print ('No cameras found')
+            print('No cameras found')
+
+    def open_camera(self):
+        """
+        Based on the open cameras, analyze if the left-hand camera is opened or 
+        not. The purpose of this method, is to guarantee that this camera will 
+        always be anabled before the image-processing.
+        """
+
+        # Flag to verify that left_hand_camera exists in the open_cams register
+        left_hand_camera_exists = False
+
+        # Open left_hand_camera in case that it exists in the register
+        for cam in self.open_cams:
+            if (cam == "left_hand_camera"):
+                left_hand_camera_exists = True
+                if (self.open_cams["left_hand_camera"] == False):
+                    CameraController("left_hand_camera").open()
+
+        # Open left_hand_camera if it does not exist in register
+        if (left_hand_camera_exists == False):
+            CameraController("head_camera").close()
+            CameraController("left_hand_camera").open()
 
     def limb_cam_process_image_callback(self, ros_img):
         """
@@ -118,7 +143,7 @@ class NodePublishFaceCoordinates:
 
         # Apply baxter_camera_point processing
         TM_w0_face = bcp.BaxterCameraCompleteTransform(
-            faces, 0.5 ).get_tm_from_w0_to_face()
+            faces, 0.5).get_tm_from_w0_to_face()
 
         self.current_coordinates = TM_w0_face[0:4, 3]
         print(self.current_coordinates)
