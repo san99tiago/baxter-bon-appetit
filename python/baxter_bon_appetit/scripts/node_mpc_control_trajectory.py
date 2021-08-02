@@ -268,11 +268,6 @@ class MpcControl:
 
                 # Publish "/user/joint_control_values" topic
                 self.publish_control_joint_commands()
-
-                # ! Temporary control action to test MPC implementation ...
-                # ! will be replaced by control node
-                self.move_baxter_based_on_joint_values()
-
             else:
                 if (face_detected_condition == False):
                     print("Face NOT detected")
@@ -295,18 +290,6 @@ class MpcControl:
         ]
         cmd.command = self.x_k_plus_1
         self._pub_joint_control_values.publish(cmd)
-
-    def move_baxter_based_on_joint_values(self):
-        """
-        Move Baxter's right limb based on calculated joint_values from the MPC.
-        """
-        # Create the baxter_inteface instance to work with Baxter's right limb
-        self.right_limb = baxter_interface.Limb('right')
-        right_limb_names = self.right_limb.joint_names()
-
-        joint_command = dict(zip(right_limb_names, self.x_k_plus_1))
-        print(joint_command)
-        self.right_limb.set_joint_positions(joint_command)
 
 
 def main():

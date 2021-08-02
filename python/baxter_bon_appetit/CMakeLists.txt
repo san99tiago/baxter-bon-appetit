@@ -19,9 +19,9 @@ find_package(catkin
 
 catkin_python_setup()
 
-# generate_dynamic_reconfigure_options(
-#   cfg/JointSpringsExample.cfg
-# )
+generate_dynamic_reconfigure_options(
+  cfg/JointSpringsBonAppetit.cfg
+)
 
 catkin_package(
   CATKIN_DEPENDS
@@ -44,11 +44,11 @@ install(
   USE_SOURCE_PERMISSIONS
 )
 
-# install(
-#   DIRECTORY launch/
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
-#   USE_SOURCE_PERMISSIONS
-# )
+install(
+  DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+  USE_SOURCE_PERMISSIONS
+)
 
 # install(
 #   DIRECTORY share/

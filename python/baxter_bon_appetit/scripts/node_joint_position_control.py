@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+
+# Built-int imports
+import time
+
+# General module imports
+import rospy
+import baxter_interface
+
+from baxter_core_msgs.msg import (
+    JointCommand
+)
+
+
+class NodeJointPositionControl:
+    """
+    ROS Node that enables Baxter Joint Controllers to execute the commands to 
+    move Baxter's right limb to a desired position.
+
+    :param sample_time: integer that defines the sample_time in seconds.
+    """
+
+    def __init__(self, sample_time):
+
+        # Control sample time in seconds
+        self.sample_time = sample_time
+
+        # Initialize command values for first iteration
+        self.command_names = [
+            "right_s0",
+            "right_s1",
+            "right_e0",
+            "right_e1",
+            "right_w0",
+            "right_w1",
+            "right_w2"
+        ]
+        self.command_values = [0, 0, 0, 0, 0, 0, 0]
+
+        _joint_control_values_sub = rospy.Subscriber(
+            'user/joint_control_values',
+            JointCommand,
+            self.joint_control_values_callback,
+            queue_size=1
+        )
+
+    def joint_control_values_callback(self, joint_command):
+        """
+        Callback to get current control_joint_values for Baxter robot.
+        """
+        self.command_names = joint_command.names
+        self.command_values = joint_command.command
+
+    def execute_control(self):
+        """
+        Execute main control loop for Baxter's right limb.
+        """
+        last_time = 0
+        iteration = 0
+
+        while not rospy.is_shutdown():
+            # Only proceed to control calculation in correct sample time multiple
+            sample_time_condition = time.time() - last_time >= self.sample_time
+            # Only proceed to control if the control joint values are right
+            correct_values_condition = self.command_values[0] != 0
+
+            if (sample_time_condition and correct_values_condition):
+                # Update time conditions, iterations and execute control method
+                last_time = time.time()
+                iteration = iteration + 1
+                self.move_baxter_based_on_joint_values()
+
+    def move_baxter_based_on_joint_values(self):
+        """
+        Move Baxter's right limb based on control joint values from callback.
+        """
+        # Create dict structure for control command (from command callback)
+        joint_command = dict(zip(self.command_names, self.command_values))
+        print(joint_command)
+
+        # Create the baxter_inteface instance to work with Baxter's right limb
+        self.right_limb = baxter_interface.Limb('right')
+        self.right_limb.set_joint_positions(joint_command)
