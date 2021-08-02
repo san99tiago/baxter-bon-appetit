@@ -204,7 +204,7 @@ class MpcControl:
             # Only proceed to control calculation in correct sample time multiple
             sample_time_condition = time.time() - last_time >= self.sample_time
             # Only proceed to control if the face was detected
-            face_detected_condition = self.cartesian_goal[2] != 0
+            face_detected_condition = self.cartesian_goal[2, 0] != 0
             # Only proceed to control if the FSM is in "mpc" state
             state_mpc_condition = "mpc" == self.state
 
