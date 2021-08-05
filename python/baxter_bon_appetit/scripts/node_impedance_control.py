@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Built-int imports
-import argparse
+import sys
 
 # Own imports
 from baxter_bon_appetit.cfg import (
@@ -11,52 +11,92 @@ from baxter_bon_appetit.cfg import (
 # General module imports
 import rospy
 import baxter_interface
-from baxter_interface import CHECK_VERSION
 
 from dynamic_reconfigure.server import (
     Server
 )
+
 from std_msgs.msg import (
     Empty
 )
 
+from baxter_core_msgs.msg import (
+    JointCommand
+)
 
-class JointSprings(object):
+
+class NodeImpedanceControl:
     """
-    Virtual Joint Springs class for torque example.
-    @param limb: limb on which to run joint springs example
-    @param reconfig_server: dynamic reconfigure server
-    JointSprings class contains methods for the joint torque example allowing
-    moving the limb to a neutral location, entering torque mode, and attaching
-    virtual springs.
+    ROS Node that enables Baxter Joint Controllers to execute the commands to 
+    move Baxter's right limb to a desired position.
+
+    Based on Virtual Joint Springs class for torque example.
+    NodeImpedanceControl class contains methods for the joint torque example,
+    allowing to move the right limb to a desired location, entering torque
+    mode, and attaching virtual springs from software.
+
+    :param sample_time: integer that defines the sample_time in seconds.
+    :param reconfig_server: dynamic reconfigure server
     """
 
-    def __init__(self, limb, reconfig_server):
+    def __init__(self, sample_time, reconfig_server):
+        self.sample_time = sample_time
         self._dyn = reconfig_server
 
-        # control parameters
+        # Control parameters
         self._rate = 1000.0  # Hz
         self._missed_cmds = 20.0  # Missed cycles before triggering timeout
 
-        # create our limb instance
+        # Create our limb instance
+        limb = "right"
         self._limb = baxter_interface.Limb(limb)
 
-        # initialize parameters
+        # Initialize parameters
         self._springs = dict()
         self._damping = dict()
         self.setpoint_angles = dict()
 
-        # create cuff disable publisher
+        # Create cuff disable publisher
         cuff_ns = 'robot/limb/' + limb + '/suppress_cuff_interaction'
-        self._pub_cuff_disable = rospy.Publisher(cuff_ns, Empty, queue_size=1)
+        self._pub_cuff_disable = rospy.Publisher(
+            cuff_ns,
+            Empty,
+            queue_size=1
+        )
 
-        # verify robot is enabled
-        print("Getting robot state... ")
-        self._rs = baxter_interface.RobotEnable(CHECK_VERSION)
-        self._init_state = self._rs.state().enabled
-        print("Enabling robot... ")
-        self._rs.enable()
-        print("Running. Ctrl-c to quit")
+        # Initialize command values for first iteration
+        command_names = [
+            "right_s0",
+            "right_s1",
+            "right_e0",
+            "right_e1",
+            "right_w0",
+            "right_w1",
+            "right_w2"
+        ]
+        command_values = [0, 0, 0, 0, 0, 0, 0]
+
+        self.setpoint_angles = dict(
+            zip(command_names, command_values)
+        )
+
+        _joint_control_values_sub = rospy.Subscriber(
+            'user/joint_control_values',
+            JointCommand,
+            self.joint_control_values_callback,
+            queue_size=1
+        )
+
+    def joint_control_values_callback(self, joint_command):
+        """
+        Callback to get current control_joint_values for Baxter robot.
+        """
+        command_names = joint_command.names
+        command_values = joint_command.command
+
+        self.setpoint_angles = dict(
+            zip(command_names, command_values)
+        )
 
     def _update_parameters(self):
         for joint in self._limb.joint_names():
@@ -98,13 +138,11 @@ class JointSprings(object):
         """
         self._limb.move_to_neutral()
 
-    def attach_springs(self):
+    def execute_control(self):
         """
         Switches to joint torque mode and attached joint springs to current
         joint positions.
         """
-        # record joint angles
-        self.setpoint_angles = self._limb.joint_angles()
 
         # set control rate
         control_rate = rospy.Rate(self._rate)
@@ -116,54 +154,34 @@ class JointSprings(object):
 
         # loop at specified rate commanding new joint torques
         while not rospy.is_shutdown():
-            if not self._rs.state().enabled:
-                rospy.logerr("Joint torque example failed to meet "
-                             "specified control rate timeout.")
-                break
-            self._update_forces()
+            # Only execute control when setpoint is updated correctly
+            if (self.setpoint_angles["right_s0"] != 0):
+                self._update_forces()
             control_rate.sleep()
-
-    def clean_shutdown(self):
-        """
-        Switches out of joint torque mode to exit cleanly
-        """
-        print("\nExiting example...")
-        self._limb.exit_control_mode()
-        if not self._init_state and self._rs.state().enabled:
-            print("Disabling robot...")
-            self._rs.disable()
 
 
 def main():
-    """RSDK Joint Torque Example: Joint Springs
-    Moves the specified limb to a neutral location and enters
+    """
+    Based on RSDK Joint Torque Example: Joint Springs
+    Moves the specified limb to a desired location and enters
     torque control mode, attaching virtual springs (Hooke's Law)
     to each joint maintaining the start position.
-    Run this example on the specified limb and interact by
-    grabbing, pushing, and rotating each joint to feel the torques
-    applied that represent the virtual springs attached.
     You can adjust the spring constant and damping coefficient
     for each joint using dynamic_reconfigure.
     """
-    arg_fmt = argparse.RawDescriptionHelpFormatter
-    parser = argparse.ArgumentParser(formatter_class=arg_fmt,
-                                     description=main.__doc__)
-    parser.add_argument(
-        '-l', '--limb', dest='limb', required=True, choices=['left', 'right'],
-        help='limb on which to attach joint springs'
-    )
-    args = parser.parse_args(rospy.myargv()[1:])
 
     print("Initializing node... ")
-    rospy.init_node("rsdk_joint_torque_springs_%s" % (args.limb,))
-    dynamic_cfg_srv = Server(JointSpringsBonAppetitConfig,
-                             lambda config, level: config)
-    js = JointSprings(args.limb, dynamic_cfg_srv)
-    # register shutdown callback
-    rospy.on_shutdown(js.clean_shutdown)
-    js.move_to_neutral()
-    js.attach_springs()
+    rospy.init_node("impedance_control")
+
+    dynamic_cfg_srv = Server(
+        JointSpringsBonAppetitConfig,
+        lambda config,
+        level: config
+    )
+
+    main_node_impedance_control = NodeImpedanceControl(dynamic_cfg_srv)
+    main_node_impedance_control.execute_control()
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
