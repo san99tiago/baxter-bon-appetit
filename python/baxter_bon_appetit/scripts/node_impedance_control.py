@@ -179,7 +179,7 @@ def main():
         level: config
     )
 
-    main_node_impedance_control = NodeImpedanceControl(dynamic_cfg_srv)
+    main_node_impedance_control = NodeImpedanceControl(0.01, dynamic_cfg_srv)
     main_node_impedance_control.execute_control()
 
 
