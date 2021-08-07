@@ -24,6 +24,10 @@ from baxter_core_msgs.msg import (
     JointCommand
 )
 
+from std_msgs.msg import (
+    String
+)
+
 
 class NodeImpedanceControl:
     """
@@ -39,8 +43,7 @@ class NodeImpedanceControl:
     :param reconfig_server: dynamic reconfigure server
     """
 
-    def __init__(self, sample_time, reconfig_server):
-        self.sample_time = sample_time
+    def __init__(self, reconfig_server):
         self._dyn = reconfig_server
 
         # Control parameters
@@ -80,12 +83,31 @@ class NodeImpedanceControl:
             zip(command_names, command_values)
         )
 
+        _fsm_sub = rospy.Subscriber(
+            'user/fsm',
+            String,
+            self.update_fsm_callback,
+            queue_size=1
+        )
+        self.state = "stop"
+
         _joint_control_values_sub = rospy.Subscriber(
             'user/joint_control_values',
             JointCommand,
             self.joint_control_values_callback,
             queue_size=1
         )
+
+    def update_fsm_callback(self, std_string):
+        """
+        Recieve the callback function from the current node that publishes the 
+        fsm as a "String" std_msgs. This enables the node to keep updating the 
+        Finite State Machine values for executing the "mpc_control".
+        :param geometry_pose: current fsm message with a standard 
+            "String" format from "std_msgs.msg". 
+        """
+        self.state = std_string.data
+        print(self.state)
 
     def joint_control_values_callback(self, joint_command):
         """
@@ -154,8 +176,11 @@ class NodeImpedanceControl:
 
         # loop at specified rate commanding new joint torques
         while not rospy.is_shutdown():
-            # Only execute control when setpoint is updated correctly
-            if (self.setpoint_angles["right_s0"] != 0):
+            # Only execute control when setpoint and state are correct
+            correct_setpoint_condition = self.setpoint_angles["right_s0"] != 0
+            correct_state_condition = self.state == "mpc" or self.state == "open_loop"
+
+            if (correct_setpoint_condition and correct_state_condition):
                 self._update_forces()
             control_rate.sleep()
 
@@ -179,7 +204,7 @@ def main():
         level: config
     )
 
-    main_node_impedance_control = NodeImpedanceControl(0.01, dynamic_cfg_srv)
+    main_node_impedance_control = NodeImpedanceControl(dynamic_cfg_srv)
     main_node_impedance_control.execute_control()
 
 
