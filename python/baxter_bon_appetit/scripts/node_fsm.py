@@ -24,7 +24,8 @@ class NodeFiniteStateMachine:
         self._pub_face_coordinates = rospy.Publisher(
             'user/fsm',
             String,
-            queue_size=1)
+            queue_size=1
+        )
 
     def publish_fsm_state(self, state):
         """
