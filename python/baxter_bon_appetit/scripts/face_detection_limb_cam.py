@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Built-int imports
+# Built-in imports
 import time
 
 # Own imports

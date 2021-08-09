@@ -15,6 +15,7 @@ find_package(catkin
   dynamic_reconfigure
   xacro
   actionlib
+  roslaunch
 )
 
 catkin_python_setup()
@@ -36,6 +37,7 @@ catkin_package(
   dynamic_reconfigure
   xacro
   actionlib
+  roslaunch
 )
 
 install(
