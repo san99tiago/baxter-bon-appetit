@@ -2,12 +2,15 @@
 
 # Built-in imports
 import sys
+import os
 
 # General module imports
 import rospy
 import baxter_interface
 from baxter_interface import CHECK_VERSION
 
+# Get path for current folder (to relative import assets)
+CURRENT_FOLDER = os.path.abspath(os.path.dirname(__file__))
 
 class NodePickUpFood:
     """
@@ -119,7 +122,7 @@ def main():
     print("Initializing node... ")
     rospy.init_node("pick_up_food")
 
-    filename = "pick_up_food.csv"
+    filename = os.path.join(CURRENT_FOLDER, "recordings", "pick_up_food.csv")
     loops = 1
 
     main_node_pick_up_food = NodePickUpFood(filename, loops)
