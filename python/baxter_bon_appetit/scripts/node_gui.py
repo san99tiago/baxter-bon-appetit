@@ -30,6 +30,9 @@ class NodeGui(Tk):
         self.geometry("1280x720")
         self.configure(bg="#FFFFFF")
         self.title("THE MOST AMAZING FEEDING ROBOT")
+        path_to_icon = os.path.join(
+            CURRENT_FOLDER, "gui_assets", "robot_icon.ico")
+        self.iconbitmap(path_to_icon)
 
         # Create the necessary components with Tkinter functionalities
         self.create_main_components()
