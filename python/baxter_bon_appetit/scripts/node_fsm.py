@@ -21,7 +21,7 @@ class NodeFiniteStateMachine:
     def __init__(self, rospy_rate):
         self.rate = rospy.Rate(rospy_rate)
 
-        self._pub_face_coordinates = rospy.Publisher(
+        self._pub_state = rospy.Publisher(
             'user/fsm',
             String,
             queue_size=1
@@ -35,7 +35,7 @@ class NodeFiniteStateMachine:
             For example, "go_to_home", "get_food", "mpc", "open_loop", "stop".
         """
         while not rospy.is_shutdown():
-            self._pub_face_coordinates.publish(state)
+            self._pub_state.publish(state)
 
 
 def main():
