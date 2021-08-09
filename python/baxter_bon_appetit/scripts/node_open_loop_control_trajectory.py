@@ -19,6 +19,10 @@ from geometry_msgs.msg import (
     Pose
 )
 
+from sensor_msgs.msg import (
+    JointState
+)
+
 from baxter_core_msgs.msg import (
     JointCommand
 )
@@ -58,6 +62,13 @@ class NodeProportionalControlFromFaceCoordinates:
             queue_size=1
         )
 
+        _joint_states_sub = rospy.Subscriber(
+            '/robot/joint_states',
+            JointState,
+            self.joint_states_callback,
+            queue_size=1
+        )
+
         self._pub_joint_control_values = rospy.Publisher(
             'user/joint_control_values',
             JointCommand,
@@ -74,6 +85,32 @@ class NodeProportionalControlFromFaceCoordinates:
         """
         self.state = std_string.data
         print(self.state)
+
+    def joint_states_callback(self, event):
+        """
+        Callback to get current joint_states angles for Baxter robot.
+        """
+        baxter_angles = event.position
+        self.joint_states = {
+            'right': [
+                baxter_angles[11],
+                baxter_angles[12],
+                baxter_angles[9],
+                baxter_angles[10],
+                baxter_angles[13],
+                baxter_angles[14],
+                baxter_angles[15]
+            ],
+            'left': [
+                baxter_angles[4],
+                baxter_angles[5],
+                baxter_angles[2],
+                baxter_angles[3],
+                baxter_angles[6],
+                baxter_angles[7],
+                baxter_angles[8]
+            ]
+        }
 
     def define_rotation_matrix(self):
         """
@@ -124,7 +161,7 @@ class NodeProportionalControlFromFaceCoordinates:
 
         return np.concatenate([tm_top_part, lower_part_array], 0)
 
-    def move_baxter_based_on_transformation_matrix(self):
+    def update_control_joint_values(self):
         """
         Move Baxter's right limb based on a complete transformation matrix 
         using BaxterInterface class with a proportional control.
@@ -132,14 +169,6 @@ class NodeProportionalControlFromFaceCoordinates:
         # Get current joint values from Baxter right limb
         b1 = bc.BaxterClass()
         self.control_joints_values = b1.ipk(self.tm_w0_tool, 'right', 'up')
-
-        # Create the baxter_inteface instance to work with Baxter's right limb
-        self.right_limb = baxter_interface.Limb('right')
-        right_limb_names = self.right_limb.joint_names()
-
-        joint_command = dict(zip(right_limb_names, self.control_joints_values))
-        print(joint_command)
-        self.right_limb.set_joint_positions(joint_command)
 
     def execute_control(self):
         """
@@ -149,10 +178,13 @@ class NodeProportionalControlFromFaceCoordinates:
             if (self.state == "open_loop"):
                 if (self.current_position_vector[0] != 0):
                     print("Face detected")
-                    self.move_baxter_based_on_transformation_matrix()
+                    self.update_control_joint_values()
+                    self.publish_control_joint_commands()
                     # self.rate.sleep()
                 else:
                     print("Face NOT detected")
+            else:
+                self.publish_current_joint_angles()
 
     def publish_control_joint_commands(self):
         """
@@ -171,6 +203,25 @@ class NodeProportionalControlFromFaceCoordinates:
             "right_w2"
         ]
         cmd.command = self.control_joints_values
+        self._pub_joint_control_values.publish(cmd)
+
+    def publish_current_joint_angles(self):
+        """
+        Publish 'JointCommand' topic with the current joint-values for each of
+        Baxter's right limb based on the open loop control.
+        """
+        cmd = JointCommand()
+        cmd.mode = JointCommand.POSITION_MODE
+        cmd.names = [
+            "right_s0",
+            "right_s1",
+            "right_e0",
+            "right_e1",
+            "right_w0",
+            "right_w1",
+            "right_w2"
+        ]
+        cmd.command = self.joint_states["right"]
         self._pub_joint_control_values.publish(cmd)
 
 

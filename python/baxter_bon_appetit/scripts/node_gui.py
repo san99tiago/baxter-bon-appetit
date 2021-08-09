@@ -123,15 +123,20 @@ class NodeGui(Tk):
         """
         Shutdown button functionalities.
         """
-        # Stop main nodes from the launch file
-        self.launch.shutdown()
-        rospy.loginfo("stoped launch")
+        try:
+            # Stop main nodes from the launch file
+            self.launch.shutdown()
+            rospy.loginfo("stoped launch")
 
-        # Disable robot
-        if not self._init_state and self._rs.state().enabled:
-            print("Disabling robot...")
-            self._rs.disable()
-        self.state = "shutdown"
+            # Disable robot
+            if not self._init_state and self._rs.state().enabled:
+                print("Disabling robot...")
+                self._rs.disable()
+            self.state = "shutdown"
+        except:
+            rospy.loginfo("shutdown error")
+
+        self.quit()
 
     def go_to_home(self):
         """
@@ -378,3 +383,4 @@ if __name__ == '__main__':
     gui.resizable(False, False)
     gui.mainloop()
     gui.active_thread = False  # To kill fsm-update thread
+    sys.exit()
