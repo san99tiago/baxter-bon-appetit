@@ -4,10 +4,12 @@
 import sys
 import os
 import threading
+import time
 
 # General module imports
 import rospy
 import roslaunch
+import baxter_interface
 from baxter_interface import CHECK_VERSION
 
 from PIL import ImageTk, Image
@@ -42,14 +44,13 @@ class NodeGui(Tk):
         self.geometry("1280x720")
         self.configure(bg="#FFFFFF")
         self.title("THE MOST AMAZING FEEDING ROBOT")
-        
-        # Only add window icon if it's compatible
+
         try:
             path_to_icon = os.path.join(
                 CURRENT_FOLDER, "gui_assets", "robot_icon.ico")
             self.iconbitmap(path_to_icon)
         except:
-            print("icon not compatible with current os")
+            print("window icon is not supported for this OS")
 
         # Create the necessary components with Tkinter functionalities
         self.create_main_components()
@@ -63,7 +64,7 @@ class NodeGui(Tk):
         self.launch_default_nodes()
 
         # Publisher to update global Baxter FSM (for Baxter-Bon-Appetit)
-        self._pub_face_coordinates = rospy.Publisher(
+        self.pub_fsm_state = rospy.Publisher(
             'user/fsm',
             String,
             queue_size=1
@@ -77,10 +78,12 @@ class NodeGui(Tk):
         :attribute state: flag that defines the desired state.
             For example, "go_to_home", "get_food", "mpc", "open_loop", "stop".
         """
-        rate = rospy.Rate(100)
         while self.active_thread and not rospy.is_shutdown():
-            rate.sleep()
-            self._pub_face_coordinates.publish(self.state)
+            time.sleep(0.1)
+            try:
+                self.pub_fsm_state.publish(self.state)
+            except:
+                print("error parsing state")
 
     def launch_default_nodes(self):
         """
@@ -90,7 +93,8 @@ class NodeGui(Tk):
         rospy.init_node('gui', anonymous=True)
         uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
         roslaunch.configure_logging(uuid)
-        launch_path = os.path.join(CURRENT_UPPER_FOLDER, "launch", self.launch_file)
+        launch_path = os.path.join(
+            CURRENT_UPPER_FOLDER, "launch", self.launch_file)
         self.launch = roslaunch.parent.ROSLaunchParent(uuid, [launch_path])
 
     def start(self):
@@ -124,8 +128,6 @@ class NodeGui(Tk):
         rospy.loginfo("stoped launch")
 
         # Disable robot
-        print("\nExiting control mode...")
-        self._limb.exit_control_mode()
         if not self._init_state and self._rs.state().enabled:
             print("Disabling robot...")
             self._rs.disable()
