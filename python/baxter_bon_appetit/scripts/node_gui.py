@@ -6,6 +6,9 @@ import os
 import threading
 import time
 
+# Own imports
+import node_pick_up_food
+
 # General module imports
 import rospy
 import roslaunch
@@ -155,6 +158,13 @@ class NodeGui(Tk):
         Pick up food button functionalities
         """
         self.state = "pick_up_food"
+
+        filename = os.path.join(CURRENT_FOLDER, "recordings", "pick_up_food.csv")
+        loops = 1
+        main_node_pick_up_food = node_pick_up_food.NodePickUpFood(filename, loops)
+        main_node_pick_up_food.map_file()
+
+        self.state = "go_to_home"
 
     def create_main_components(self):
         """
