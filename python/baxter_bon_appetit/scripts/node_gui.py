@@ -4,7 +4,6 @@
 import sys
 import os
 import threading
-import time
 
 # Own imports
 import node_pick_up_food
@@ -17,6 +16,7 @@ from baxter_interface import CHECK_VERSION
 
 from PIL import ImageTk, Image
 if (sys.version_info[0] >= 3):
+    import tkinter
     from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Frame
 else:
     from Tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Frame
@@ -36,9 +36,9 @@ class NodeGui(Tk):
     Bon Appetit main functionalities in a friendly way.
     """
 
-    def __init__(self, launch_file, control_algorithm):
-        self.launch_file = launch_file
+    def __init__(self, control_algorithm, launch_instance):
         self.control_algorithm = control_algorithm
+        self.launch = launch_instance
 
         # Initialize parent object (Tk) to use their methods as "self"
         Tk.__init__(self)
@@ -47,58 +47,41 @@ class NodeGui(Tk):
         self.geometry("1280x720")
         self.configure(bg="#FFFFFF")
         self.title("THE MOST AMAZING FEEDING ROBOT")
-
+        path_to_icon = os.path.join(
+            CURRENT_FOLDER, "gui_assets", "robot_icon.ico")
         try:
-            path_to_icon = os.path.join(
-                CURRENT_FOLDER, "gui_assets", "robot_icon.ico")
             self.iconbitmap(path_to_icon)
         except:
-            print("window icon is not supported for this OS")
+            print("Window icon is not supported for this OS")
 
         # Create the necessary components with Tkinter functionalities
         self.create_main_components()
 
-        # Execute thread to constantly update self.state for fsm
+        # Execute thread to constantly update self.fsm_state for fsm
         self.active_thread = True
         self.t = threading.Thread(target=self.publish_fsm_state)
         self.t.start()
 
-        # Launch main nodes to guarantee default Baxter functionalities
-        self.launch_default_nodes()
-
         # Publisher to update global Baxter FSM (for Baxter-Bon-Appetit)
-        self.pub_fsm_state = rospy.Publisher(
+        self.pub_state = rospy.Publisher(
             'user/fsm',
             String,
             queue_size=1
         )
-        self.state = "stop"
+        self.fsm_state = "stop"
 
     def publish_fsm_state(self):
         """
         Method to publish the desired state in a ROS topic that enables the 
         overall selection of each one of the other nodes.
-        :attribute state: flag that defines the desired state.
+        :attribute fsm_state: flag that defines the desired state.
             For example, "go_to_home", "get_food", "mpc", "open_loop", "stop".
         """
         while self.active_thread and not rospy.is_shutdown():
-            time.sleep(0.1)
             try:
-                self.pub_fsm_state.publish(self.state)
+                self.pub_state.publish(self.fsm_state)
             except:
-                print("error parsing state")
-
-    def launch_default_nodes(self):
-        """
-        Execute a desired ROS-launch file to be able to start it and stop it
-        when needed from the other methods.
-        """
-        rospy.init_node('gui', anonymous=True)
-        uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
-        roslaunch.configure_logging(uuid)
-        launch_path = os.path.join(
-            CURRENT_UPPER_FOLDER, "launch", self.launch_file)
-        self.launch = roslaunch.parent.ROSLaunchParent(uuid, [launch_path])
+                pass
 
     def start(self):
         """
@@ -114,13 +97,13 @@ class NodeGui(Tk):
         # Start main nodes from the launch file
         self.launch.start()
         rospy.loginfo("started launch")
-        self.state = "start"
+        self.fsm_state = "start"
 
     def stop(self):
         """
         Stop button functionalities.
         """
-        self.state = "stop"
+        self.fsm_state = "stop"
 
     def shutdown(self):
         """
@@ -132,12 +115,12 @@ class NodeGui(Tk):
             rospy.loginfo("stoped launch")
 
             # Disable robot
-            if not self._init_state and self._rs.state().enabled:
+            if self._rs.state().enabled:
                 print("Disabling robot...")
                 self._rs.disable()
-            self.state = "shutdown"
+            self.fsm_state = "shutdown"
         except:
-            rospy.loginfo("shutdown error")
+            rospy.loginfo("Shutdown error")
 
         self.quit()
 
@@ -145,26 +128,28 @@ class NodeGui(Tk):
         """
         Go to home button functionalities
         """
-        self.state = "go_to_home"
+        self.fsm_state = "go_to_home"
 
     def give_food(self):
         """
         Give food button functionalities
         """
-        self.state = self.control_algorithm
+        self.fsm_state = self.control_algorithm
 
     def pickup_food(self):
         """
         Pick up food button functionalities
         """
-        self.state = "pick_up_food"
+        self.fsm_state = "pick_up_food"
 
-        filename = os.path.join(CURRENT_FOLDER, "recordings", "pick_up_food.csv")
+        filename = os.path.join(CURRENT_FOLDER,"recordings", "pick_up_food.csv")
         loops = 1
-        main_node_pick_up_food = node_pick_up_food.NodePickUpFood(filename, loops)
+        main_node_pick_up_food = node_pick_up_food.NodePickUpFood(
+            filename,
+            loops
+        )
         main_node_pick_up_food.map_file()
-
-        self.state = "go_to_home"
+        self.fsm_state = "go_to_home"
 
     def create_main_components(self):
         """
@@ -386,10 +371,19 @@ if __name__ == '__main__':
         launch_file = sys.argv[1]
         control_algorithm = sys.argv[2]
     except:
-        launch_file = "fake_mpc_position_control_nodes.launch"
+        launch_file = "mpc_position_control_nodes.launch"
         control_algorithm = "mpc"
 
-    gui = NodeGui(launch_file, control_algorithm)
+    print("Initializing node... ")
+    rospy.init_node('gui_baxter_bon_appetit')
+
+    # Launch main nodes to guarantee default Baxter functionalities
+    uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+    roslaunch.configure_logging(uuid)
+    launch_path = os.path.join(CURRENT_UPPER_FOLDER, "launch", launch_file)
+    launch = roslaunch.parent.ROSLaunchParent(uuid, [launch_path])
+
+    gui = NodeGui(control_algorithm, launch)
     gui.resizable(False, False)
     gui.mainloop()
     gui.active_thread = False  # To kill fsm-update thread
