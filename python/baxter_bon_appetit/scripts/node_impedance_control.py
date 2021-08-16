@@ -184,6 +184,13 @@ class NodeImpedanceControl:
                 self._update_forces()
             control_rate.sleep()
 
+    def clean_shutdown(self):
+        """
+        Switches out of joint torque mode to exit cleanly
+        """
+        self._limb.exit_control_mode()
+
+
 
 def main():
     """
@@ -205,6 +212,7 @@ def main():
     )
 
     main_node_impedance_control = NodeImpedanceControl(dynamic_cfg_srv)
+    rospy.on_shutdown(main_node_impedance_control.clean_shutdown)
     main_node_impedance_control.execute_control()
 
 
