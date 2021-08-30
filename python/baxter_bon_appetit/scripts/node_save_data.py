@@ -107,9 +107,9 @@ class NodeSaveData:
                 geometry_pose.position.x,
                 geometry_pose.position.y,
                 geometry_pose.position.z,
-                1.3486466410078362,
-                1.466247306243215,
-                -1.2373949601695735
+                0.6660425877100662,
+                1.5192944057794895,
+                -1.3616725381467032
             ]).reshape((6, 1))
 
         if (self.show_results == True):
