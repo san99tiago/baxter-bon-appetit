@@ -99,8 +99,9 @@ class FaceDetector:
         self.height, self.width = self.image.shape[:2]
 
         if self.show_results:
-            cv.rectangle(self.image, (int(self.width/2), int(self.height/2)),
-                         (int(self.width/2) + 1, int(self.height/2) + 1), (0, 0, 255), 5)
+            pass
+            # cv.rectangle(self.image, (int(self.width/2), int(self.height/2)),
+            #              (int(self.width/2) + 1, int(self.height/2) + 1), (0, 0, 255), 5)
 
 
 if __name__ == "__main__":
