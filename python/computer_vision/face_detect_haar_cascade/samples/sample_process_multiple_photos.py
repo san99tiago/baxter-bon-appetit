@@ -17,15 +17,18 @@ ASSETS_FOLDER = gaf.get_assets_folder_path()
 
 def main():
 
-    for i in range(25):
+    for i in range(39):
         # Sample "i"
-        image_relative_path = os.path.join(
-            ASSETS_FOLDER, "imgs_different_people", "person_" + str(i + 1) + ".png")
-        image = cv.imread(image_relative_path)
-        image = cv.resize(image, (500, 700))
-        fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=True)
-        fd.face_detect()
-        cv.waitKey(0)
+        try:
+            image_relative_path = os.path.join(
+                ASSETS_FOLDER, "imgs_different_people", "person_" + str(i + 1) + ".png")
+            image = cv.imread(image_relative_path)
+            image = cv.resize(image, (500, 700))
+            fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=True)
+            fd.face_detect()
+            cv.waitKey(0)
+        except:
+            print("There was an error opening photo of person " + str(i + 1))
 
 
 if __name__ == "__main__":
