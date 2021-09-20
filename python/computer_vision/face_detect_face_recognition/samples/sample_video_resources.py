@@ -5,7 +5,7 @@ import os
 import math
 
 # My own imports
-import face_detect_hc as fdhc
+import face_detect_fr as fdfr
 import get_assets_folder as gaf
 
 # General module imports
@@ -33,7 +33,7 @@ class TotalResourcesAnalyzer:
 
                 if ret == True:
                     # Apply face_detect algorithm to each image capture
-                    fd = fdhc.FaceDetector(
+                    fd = fdfr.FaceDetector(
                         image, show_results=True, only_biggest_face=True
                     )
                     faces = fd.face_detect()
