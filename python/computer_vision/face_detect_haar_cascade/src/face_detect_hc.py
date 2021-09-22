@@ -51,7 +51,7 @@ class FaceDetector:
             # Draw a rectangle in the face/faces found
             for (x, y, w, h) in self.faces:
                 cv.rectangle(self.image, (x, y),
-                             (x + w, y + h), (255, 255, 55), 3)
+                             (x + w, y + h), (0, 0, 255), 10)
 
             cv.imshow("image", self.image)
             print("Found faces correctly in given image!")

@@ -2,6 +2,7 @@
 
 # Built-int imports
 import os
+import glob
 
 # External imports
 import cv2 as cv
@@ -14,22 +15,30 @@ import get_assets_folder as gaf
 # Get assets folder in repo for the samples
 ASSETS_FOLDER = gaf.get_assets_folder_path()
 
+print(ASSETS_FOLDER)
+RESULTS_FOLDER = os.path.join(ASSETS_FOLDER, "imgs_different_people_detected")
 
-def main():
+def main(save_data):
 
-    for i in range(39):
-        # Sample "i"
+    all_photos = glob.glob(os.path.join(ASSETS_FOLDER, "imgs_different_people", "*.png"))
+
+    cont = 0
+    for photo in all_photos:
+        cont = cont + 1
         try:
-            image_relative_path = os.path.join(
-                ASSETS_FOLDER, "imgs_different_people", "person_" + str(i + 1) + ".png")
-            image = cv.imread(image_relative_path)
+            image = cv.imread(photo)
             image = cv.resize(image, (500, 700))
             fd = fdhc.FaceDetector(image, show_results=True, only_biggest_face=True)
             fd.face_detect()
+
+            if (save_data == "yes"):
+                path_to_save_photo = os.path.join(RESULTS_FOLDER, "person_{}.png".format(str(cont)))
+                cv.imwrite(path_to_save_photo, image)
+
             cv.waitKey(0)
         except:
-            print("There was an error opening photo of person " + str(i + 1))
+            print("There was an error opening photo: " + photo)
 
 
 if __name__ == "__main__":
-    main()
+    main("no")
