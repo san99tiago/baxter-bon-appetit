@@ -18,8 +18,10 @@ from PIL import ImageTk, Image
 if (sys.version_info[0] >= 3):
     import tkinter
     from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Frame
+    import tkinter.font as tkFont
 else:
     from Tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Frame
+    import tkFont
 
 from std_msgs.msg import (
     String
@@ -98,17 +100,21 @@ class NodeGui(Tk):
         self.launch.start()
         rospy.loginfo("started launch")
         self.fsm_state = "start"
+        self.update_state_text_info("ROBOT\nREADY")
 
     def stop(self):
         """
         Stop button functionalities.
         """
         self.fsm_state = "stop"
+        self.update_state_text_info("STOPPED")
 
     def shutdown(self):
         """
         Shutdown button functionalities.
         """
+        self.update_state_text_info("SHUT DOWN")
+
         try:
             # Stop main nodes from the launch file
             self.launch.shutdown()
@@ -129,18 +135,21 @@ class NodeGui(Tk):
         Go to home button functionalities
         """
         self.fsm_state = "go_to_home"
+        self.update_state_text_info("GOING TO\n   HOME")
 
     def give_food(self):
         """
         Give food button functionalities
         """
         self.fsm_state = self.control_algorithm
+        self.update_state_text_info("GIVING\n FOOD")
 
     def pickup_food(self):
         """
         Pick up food button functionalities
         """
         self.fsm_state = "pick_up_food"
+        self.update_state_text_info("PICKING UP\n    FOOD")
 
         filename = os.path.join(CURRENT_FOLDER,"recordings", "pick_up_food.csv")
         loops = 1
@@ -163,6 +172,7 @@ class NodeGui(Tk):
         self.create_shutdown_button()
         self.create_stop_button()
         self.create_start_button()
+        self.create_state_text()
 
     def create_background(self):
         """
@@ -363,6 +373,36 @@ class NodeGui(Tk):
             width=155.0,
             height=156.0
         )
+
+    def create_state_text(self):
+        """
+        Method to create the "state" text for the GUI (to show current state).
+        """
+        font_for_states = tkFont.Font(family='Helvetica',size=15, weight='bold')
+        self.state_text = Text(
+            self,
+            bd=0,
+            bg="#FFFFFF",
+            fg="#FFFFFF",
+            highlightthickness=0,
+            background="#AB2A22",
+            font=font_for_states
+        )
+        self.state_text.place(
+            x=348.0,
+            y=643.0,
+            width=143.0,
+            height=54.0
+        )
+
+    def update_state_text_info(self, message):
+        """
+        Method to update the state located text message to show the current
+        state of the FSM.
+        :param message: string of the message (state) to show in text.
+        """
+        self.state_text.delete('1.0', "end")
+        self.state_text.insert("insert", message)
 
 
 if __name__ == '__main__':
