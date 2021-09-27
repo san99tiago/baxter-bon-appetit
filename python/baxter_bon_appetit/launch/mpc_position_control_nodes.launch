@@ -2,11 +2,12 @@
 
     <!-- Arguments -->
     <arg name="N" default="1" doc="Prediction Horizon for MPC control algorithm" />
+    <arg name="M" default="1" doc="Control Horizon for MPC control algorithm" />
 
     <!-- Run the necessary nodes for Baxter fake MPC execution -->
     <node name="go_to_home" pkg="baxter_bon_appetit" type="node_go_to_home.py" respawn="true" output="screen" />
     <node name="publish_face_coordinates" pkg="baxter_bon_appetit" type="node_publish_face_coordinates.py" respawn="true" output="screen" />
-    <node name="mpc_control" pkg="baxter_bon_appetit" type="node_mpc_control_trajectory.py" args="$(arg N)" respawn="true" output="screen" />
+    <node name="mpc_control" pkg="baxter_bon_appetit" type="node_mpc_control_trajectory.py" args="$(arg N) $(arg M)" respawn="true" output="screen" />
     <node name="joint_position_control" pkg="baxter_bon_appetit" type="node_joint_position_control.py" respawn="true" output="screen" />
 
 </launch>

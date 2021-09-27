@@ -41,10 +41,13 @@ class MpcControl:
     :param sample_time: integer that defines the sample_time in seconds.
     """
 
-    def __init__(self, sample_time=0.01, prediction_horizon=1):
+    def __init__(self, sample_time=0.01, prediction_horizon=1, control_horizon=1):
 
         # Prediction horizon
         self.N = prediction_horizon
+
+        # Control horizon
+        self.M = control_horizon
 
         # Control sample time in seconds
         self.sample_time = sample_time
@@ -188,6 +191,8 @@ class MpcControl:
         x_k = self.x0
         u_k = self.u0
 
+        m_count = 1  # Control horizon counter (1, 2, ... , M, 1, 2, ..., M, 1, 2, ..., M ...)
+
         last_time = 0
         iteration = 0
 
@@ -208,17 +213,25 @@ class MpcControl:
 
                 # Apply MPC prediction
                 try:
-                    mpc = b_mpc.MpcController(self.N, True, True)
+                    # Apply MPC prediction
+                    if (m_count >= self.M):
+                        m_count = 1
 
-                    # Read current Baxter right limb joint values
-                    x_k = self.joint_states["right"]
-                    x_k = np.array(x_k).reshape(7, 1)
+                    if (m_count == 1):
+                        mpc = b_mpc.MpcController(self.N, True, True)
 
-                    dict_results = mpc.execute_mpc(self.cartesian_goal, x_k)
-                    u = dict_results["optimal_dthetas"]
+                        # Read current Baxter right limb joint values
+                        x_k = self.joint_states["right"]
+                        x_k = np.array(x_k).reshape(7, 1)
+
+                        dict_results = mpc.execute_mpc(self.cartesian_goal, x_k)
+                        u = dict_results["optimal_dthetas"]
 
                     # Prediction Horizon for 1 iteration at a time
-                    u_k = u[:, 0].reshape((nu, 1))
+                    u_k = u[:, m_count - 1].reshape((nu, 1))
+
+                    # Modify counter to pass to next control horizon value
+                    m_count = m_count + 1
 
                     # Calculate new states based on StateSpace representation
                     self.x_k_plus_1 = x_k + u_k
@@ -257,10 +270,11 @@ def main():
     print("Initializing node... ")
     rospy.init_node('mpc_control')
 
-    # Prediction horizon (input)
+    # Prediction horizon [N] and Control horizon [M] (inputs)
     N = int(sys.argv[1])
+    M = int(sys.argv[2])
 
-    main_node_mpc = MpcControl(0.001, N)
+    main_node_mpc = MpcControl(0.001, N, M)
     main_node_mpc.execute_mpc_control()
     return 0
 

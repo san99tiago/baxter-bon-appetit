@@ -320,7 +320,168 @@ def test_2_mpc_first_attempt(show_results=True):
 
     plt.show()
 
+def test_3_mpc_with_control_horizon(show_results=True):
+    """
+    Sample control loop to test MPC algorithm on Baxter right limbr for custom 
+    variables such as N, M, total_time, sample_time, cartesian_goal, x0, u0 and 
+    validate the resulting plots with or without noise.
+    """
+
+    # Main conditions for executing the control loop with MPC algorithm
+    N = 1  # Prediction horizon
+    M = 1  # Control horizon
+    m_count = 1  # Control horizon counter (1, 2, ... , M, 1, 2, ..., M, 1, 2, ..., M ...)
+
+    total_time_in_seconds = 10
+    sample_time_in_seconds = 0.1
+
+    # Initial conditions for states and inputs
+    x0 = np.array(
+        [
+            0.39500005288049406,
+            -1.2831749290661485,
+            -0.18867963690990588,
+            2.5905100555414924,
+            -0.11428156869746332,
+            -1.3506700837331067,
+            0.11504855909140603
+        ]
+    ).reshape(7, 1)
+
+    u0 = np.array([0, 0, 0, 0, 0, 0, 0]).reshape(7, 1)
+
+    # Number inputs (same as number of degrees of freedom)
+    nu = u0.shape[0]
+
+    # Initial cartesian_goal "default" value
+    cartesian_goal = np.array(
+        [
+            [
+                -0.9,
+                -1.0,
+                1.1,
+                0.6660425877100662,
+                1.5192944057794895,
+                -1.3616725381467032
+            ],
+        ] * N
+    ).transpose().reshape(6, N)
+
+    # ---------- Main Control loop -------------
+    # Variables for control loop
+    x_k = x0
+    u_k = u0
+
+    iteration_vector = list()
+    x_matrix = np.zeros((x_k.shape[0], 0))
+    u_matrix = np.zeros((u_k.shape[0], 0))
+    cartesian_matrix = np.zeros((cartesian_goal.shape[0], 0))
+    cartesian_goal_matrix = np.zeros((cartesian_goal.shape[0], 0))
+
+    # Instead of running the algorithms in real time, we will run the total
+    # amount of discrete iterations (to get the total time)...
+    iteration = 0
+    total_iterations = int(total_time_in_seconds/sample_time_in_seconds)
+    for _ in range(total_iterations):
+        iteration_vector.append(iteration)
+        if (show_results == True):
+            print("Iteration (k): ", iteration)
+        iteration = iteration + 1
+
+        # Apply MPC prediction
+        if (m_count >= M):
+            m_count = 1
+
+        if (m_count == 1):
+            mpc = b_mpc.MpcController(N, True, True)
+            cartesian_goal = cartesian_goal + np.array(
+                [
+                    [
+                        0 * np.sin(iteration/5),
+                        0 * np.sin(iteration/5),
+                        0 * np.sin(iteration/5),
+                        0,
+                        0,
+                        0
+                    ],
+                ] * N
+            ).transpose().reshape((6, N))
+
+            dict_results = mpc.execute_mpc(cartesian_goal, x_k)
+            u = dict_results["optimal_dthetas"]
+
+        # Prediction Horizon for 1 iteration at a time
+        u_k = u[:, m_count - 1].reshape((nu, 1))
+
+        # Modify counter to pass to next control horizon value
+        m_count = m_count + 1
+
+        # Calculate new states based on StateSpace representation
+        x_k_plus_1 = x_k + u_k
+
+        # Add "random noise" to measurements (like real-life)
+        x_k_plus_1 = x_k_plus_1 + np.array(
+            [
+                1 * random.uniform(-0.005, 0.005),
+                1 * random.uniform(-0.005, 0.005),
+                1 * random.uniform(-0.005, 0.005),
+                1 * random.uniform(-0.005, 0.005),
+                1 * random.uniform(-0.005, 0.005),
+                1 * random.uniform(-0.005, 0.005),
+                1 * random.uniform(-0.005, 0.005)
+            ]
+        ).reshape((7, 1))
+
+        # Update current state for the next iteration
+        x_k = x_k_plus_1
+
+        cartesian_k = calculate_cartesian_vectors(x_k)
+
+        # Save current x and u values to plot latter
+        x_matrix = np.hstack((x_matrix, x_k))
+        u_matrix = np.hstack((u_matrix, u_k))
+        cartesian_matrix = np.hstack((cartesian_matrix, cartesian_k))
+        cartesian_goal_matrix = np.hstack(
+            (cartesian_goal_matrix, cartesian_goal[:, 0].reshape(6, 1)))
+
+    if (show_results == True):
+        print("len(iteration_vector):")
+        print(len(iteration_vector))
+        print("iteration_vector:")
+        print(iteration_vector)
+        print("u_matrix.shape:")
+        print(u_matrix.shape)
+        print("u_matrix:")
+        print(u_matrix)
+        print("x_matrix.shape:")
+        print(x_matrix.shape)
+        print("x_matrix:")
+        print(x_matrix)
+
+    create_plots(
+        iteration_vector,
+        cartesian_matrix,
+        cartesian_goal_matrix,
+        sample_time_in_seconds,
+        "Cartesian Values responses based on MPC with N={}".format(N),
+        "current",
+        "goal"
+    )
+
+    create_plots(
+        iteration_vector,
+        x_matrix,
+        u_matrix,
+        sample_time_in_seconds,
+        "X and U responses based on MPC with N={}".format(N),
+        "x",
+        "u"
+    )
+
+    plt.show()
+
 
 if __name__ == '__main__':
     # test_1_step_response_without_feedback(True)
-    test_2_mpc_first_attempt(True)
+    # test_2_mpc_first_attempt(True)
+    test_3_mpc_with_control_horizon(True)
