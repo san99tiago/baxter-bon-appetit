@@ -107,7 +107,7 @@ class NodeGui(Tk):
         Stop button functionalities.
         """
         self.fsm_state = "stop"
-        self.update_state_text_info("STOPPED")
+        self.update_state_text_info("STANDING\n   BY")
 
     def shutdown(self):
         """
