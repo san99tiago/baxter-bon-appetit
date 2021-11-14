@@ -115,7 +115,7 @@ We will be uploading most of the files, and try to keep it as clean as possible.
             <p align="center"><img src="assets/imgs/ElkinGuerra.jpg" width=65%></p>
         </td>
         <td>
-            Student of Mechatronics Engineering at EIA University, excited for creating Software solutions. <br> He is curious about implementing Clean Code architectures, a DevSecOps culture and building strong connections with his teams. <br> He has skills leading and working in teams. He is passionate about sharing his knowledge and learning the art of how everything actually works. <br>
+            Student of Mechatronics Engineering at EIA University, excited for integrating Software and Hardware systems. <br> He is curious about Control Theory and implementing Robotics Solutions with different math designs. <br> He has skills with problem-solving for real-life applications. He is passionate about building knowledge from a theory-practice approach. <br>
         </td>
     </tr>
 </table>
