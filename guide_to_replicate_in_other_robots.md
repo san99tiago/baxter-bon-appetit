@@ -1,4 +1,4 @@
-# <img src="assets/imgs/gif_robotboy_flying.gif"> GUIDE TO REPLICATE BAXTER BON APPETIT IN OTHER ROBOTS <img src="assets/imgs/gif_robotboy_flying.gif">
+# GUIDE TO REPLICATE BAXTER BON APPETIT IN OTHER ROBOTS <img src="assets/imgs/gif_robotboy_flying.gif">
 
 This is a step-by-step guide on how to migrate the source code from [Baxter Bon Appetit](https://github.com/san99tiago/baxter-bon-appetit) to similar robotic platforms. <br>
 
@@ -29,7 +29,7 @@ The mathematical "building blocks" of the robot's algorithms are inside `baxter_
 .
 ├── baxter_essentials  # Rename to "<your_robot>_essentials"
 │   ├── __init__.py
-│   ├── baxter_class.py  # Rename to "<your_robot>_class"
+│   ├── baxter_class.py  # Rename to "<your_robot>_class.py"
 │   ├── baxter_fpk.py  # Rename to "<your_robot>_fpk.py"
 │   ├── baxter_ipk.py  # Rename to "<your_robot>_ipk.py"
 │   ├── baxter_jacobian.py  # Rename to "<your_robot>_jacobian.py"
