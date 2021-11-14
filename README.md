@@ -1,4 +1,4 @@
-# :robot: THE AMAZING BAXTER "FEEDING ROBOT" TESIS :robot:
+# :robot: BAXTER BON APPETIT :robot:
 
 This is our repository to work on multiple projects and experiments related to the thesis.<br>
 The thesis will be programmed using [Baxter Robot](<https://en.wikipedia.org/wiki/Baxter_(robot)>) as the main system to achieve a educational
@@ -127,5 +127,5 @@ We will be uploading most of the files, and try to keep it as clean as possible.
 - Thanks to our professor and friend: Dolly Tatiana Manrique Espindola.
 - Thanks to all contributors for the great OpenSource projects that we are using.
 
-<img src="assets/imgs/gif_baxter_dancing.gif" width=30%>
+<p align="center"><img src="assets/imgs/gif_baxter_dancing.gif" width=30%></p>
 <br>
